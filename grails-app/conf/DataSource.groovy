@@ -10,7 +10,6 @@ hibernate {
     cache.provider_class = 'net.sf.ehcache.hibernate.EhCacheProvider'
 }
 // environment specific settings
-// test commit
 environments {
     development {
         dataSource {
