@@ -1,6 +1,6 @@
-<div id='login_form' class="box">
+<div id='googleDiv' class="box">
   <is:boxTile><g:message code="is.googleAgenda.ui.googleAgendaAdmin" /></is:boxTile>
-  <form id="loginForm" name="adminForm" method="post" class='box-form box-form-small-legend box-content box-form-180' onsubmit="$('input[name=adminButton]').click();return false;">
+  <form id="googleForm" name="googleForm" method="post" class='box-form box-form-small-legend box-content box-form-180' onsubmit="$('input[name=googleButton]').click();return false;">
   <is:fieldInformation nobordertop="false">
     <g:message code="is.ui.googleAgenda.ui.setAccountDescription"/>
   </is:fieldInformation>
@@ -10,12 +10,11 @@
   <is:fieldInput for="googlePassword" label="is.googleAgenda.ui.googlePassword">
     <is:password id="googlePassword" name="googlePassword" />
   </is:fieldInput>
-  <is:buttonBar id="admin-button-bar">
+  <is:buttonBar id="googleButtonBar">
     <is:button
-              targetLocation="adminGoogleAgenda"
-              id="connect"
-              type="submitToRemote"
-              url="[controller:'adminGoogleAgenda', action:'connectAccount']"
+              name="googleButton"
+              type="submit"
+              url="[controller:'googleAgenda', action:'saveAccount']"
               value="${message(code:'is.googleAgenda.ui.connectAccount')}"/>
     <is:button type="link" button="button-s button-s-black"
               value="${message(code: 'is.button.cancel')}"/>
