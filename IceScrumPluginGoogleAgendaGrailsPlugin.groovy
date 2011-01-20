@@ -10,6 +10,8 @@ class IceScrumPluginGoogleAgendaGrailsPlugin {
             "grails-app/views/error.gsp"
     ]
 
+    def loadAfter = ['icescrum-core-webcomponents']
+
     // TODO Fill in these fields
     def author = "Your name"
     def authorEmail = ""

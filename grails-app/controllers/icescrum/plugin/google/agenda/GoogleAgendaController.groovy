@@ -1,6 +1,5 @@
 package icescrum.plugin.google.agenda
 
-import icescrum.plugin.google.agenda.GoogleAccount
 import grails.plugins.springsecurity.Secured
 import org.icescrum.web.support.MenuBarSupport
 import org.icescrum.core.domain.Product
