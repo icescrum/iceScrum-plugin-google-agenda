@@ -5,4 +5,4 @@
 <is:button
            url="[controller:id, action:'updateCalendar', params:[product:params.product]]"
            type="link"
-           value="${message(code: 'is.googleAgenda.ui.updateCalendar')}"/>
+           value="${message(code: 'is.googleAgenda.ui.updateCalendar')}" />
