@@ -13,7 +13,7 @@
           <is:button
                     type="submit"
                     url="[controller:id, action:'saveAccount', params:[product:params.product]]"
-                    value="${message(code:'is.googleAgenda.ui.connectAccount')}"/>
+                    value="${message(code:'is.googleAgenda.ui.connectAccount')}" />
         </is:buttonBar>
     </is:fieldset>
 </form>
