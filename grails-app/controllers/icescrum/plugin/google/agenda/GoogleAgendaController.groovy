@@ -32,7 +32,7 @@ class GoogleAgendaController {
 
     def saveAccount = {
         GoogleAccount projectAccount = new GoogleAccount(login:params.googleLogin, password:params.googlePassword, product:Product.get(params.product))
-        if(tryConnection(params.googleLogin, params.googlePassword)) {
+        if(getConnection(params.googleLogin, params.googlePassword)) {
             projectAccount.save()
             render(status:200,contentType:'application/json', text: [notice: [text: message(code:'Compte ok')]] as JSON)
         }
@@ -40,7 +40,7 @@ class GoogleAgendaController {
             render(status:400,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.error.wrongCredentials')]] as JSON)
     }
 
-    def tryConnection(login, password) {
+    def getConnection(login, password) {
         CalendarService googleService = new CalendarService("test")
         try {
           googleService.setUserCredentials(login, password);
@@ -48,11 +48,15 @@ class GoogleAgendaController {
         catch (AuthenticationException e) {
           return false
         }
-        return true
+        return googleService
     }
 
     def updateCalendar = {
         print "Update"
         redirect(action:'index')
+    }
+
+    def getSprints = {
+        return []
     }
 }
