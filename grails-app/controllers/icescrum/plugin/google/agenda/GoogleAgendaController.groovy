@@ -4,6 +4,8 @@ import grails.plugins.springsecurity.Secured
 import org.icescrum.web.support.MenuBarSupport
 import org.icescrum.core.domain.Product
 
+import grails.converters.JSON
+
 import com.google.gdata.client.calendar.CalendarService
 import com.google.gdata.util.AuthenticationException
 
@@ -30,9 +32,12 @@ class GoogleAgendaController {
 
     def saveAccount = {
         GoogleAccount projectAccount = new GoogleAccount(login:params.googleLogin, password:params.googlePassword, product:Product.get(params.product))
-        println "Connection to google agenda : " + tryConnection(param.googleLogin, params.googlePassword)
-        projectAccount.save()
-        redirect (action:'index')
+        if(tryConnection(params.googleLogin, params.googlePassword)) {
+            projectAccount.save()
+            render(status:200,contentType:'application/json', text: [notice: [text: message(code:'Compte ok')]] as JSON)
+        }
+        else
+            render(status:400,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.error.wrongCredentials')]] as JSON)
     }
 
     def tryConnection(login, password) {
@@ -47,7 +52,7 @@ class GoogleAgendaController {
     }
 
     def updateCalendar = {
-        print "toto"
-        redirect (action:'index')
+        print "Update"
+        redirect(action:'index')
     }
 }

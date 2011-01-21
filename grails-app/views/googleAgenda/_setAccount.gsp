@@ -11,7 +11,6 @@
         </is:fieldInput>
         <is:buttonBar id="googleButtonBar">
           <is:button
-                    update="jQuery.icescrum.openWindow('#googleAgenda')"
                     type="submit"
                     url="[controller:id, action:'saveAccount', params:[product:params.product]]"
                     value="${message(code:'is.googleAgenda.ui.connectAccount')}"/>
