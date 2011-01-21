@@ -3,6 +3,7 @@ package icescrum.plugin.google.agenda
 import grails.plugins.springsecurity.Secured
 import org.icescrum.web.support.MenuBarSupport
 import org.icescrum.core.domain.Product
+import org.icescrum.core.domain.Sprint
 
 import grails.converters.JSON
 
@@ -28,6 +29,8 @@ class GoogleAgendaController {
                 plugin:'iceScrum-plugin-google-agenda',
                 model:[id:id]
         }
+
+        getSprints()
     }
 
     def saveAccount = {
@@ -57,6 +60,14 @@ class GoogleAgendaController {
     }
 
     def getSprints = {
-        return []
+        def sprints = []
+        def product = Product.get(params.product);
+        product.releases?.each { r->
+            r.sprints.asList().each { s->
+                 sprints.add(s)
+                 println "date :" + s.startDate
+            }
+        }
+        return sprints.asList()
     }
 }
