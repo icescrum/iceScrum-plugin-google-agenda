@@ -11,11 +11,10 @@
         </is:fieldInput>
         <is:buttonBar id="googleButtonBar">
           <is:button
+                    update="jQuery.icescrum.openWindow('#googleAgenda')"
                     type="submit"
                     url="[controller:id, action:'saveAccount', params:[product:params.product]]"
                     value="${message(code:'is.googleAgenda.ui.connectAccount')}"/>
-          <is:button type="link" button="button-s button-s-black"
-                    value="${message(code: 'is.button.cancel')}"/>
         </is:buttonBar>
     </is:fieldset>
 </form>
