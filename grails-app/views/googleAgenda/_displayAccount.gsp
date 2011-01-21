@@ -1,6 +1,6 @@
-<h1>An account is already registered for this project.</h1>
+<h1>${message code='is.googleAgenda.ui.accountAlreadyRegistered'}</h1>
 <p>
-  Account login : ${login}
+  ${message code='is.googleAgenda.ui.registeredAccountLogin'} ${login}
 </p>
 <is:button
            url="[controller:id, action:'updateCalendar', params:[product:params.product]]"
