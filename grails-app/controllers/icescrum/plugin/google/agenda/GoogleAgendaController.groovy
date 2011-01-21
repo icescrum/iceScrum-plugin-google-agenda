@@ -55,7 +55,12 @@ class GoogleAgendaController {
     }
 
     def updateCalendar = {
-        print "Update"
+        GoogleAccount googleAccount = GoogleAccount.findByProduct(Product.get(params.product))
+        CalendarService googleService = getConnection(googleAccount.login, googleAccount.password)
+        int i = 0
+        getSprints().each {
+            createEvent(googleService, "sprint-" + i++, "no comment", it.startDate, it.endDate)
+        }
         redirect(action:'index')
     }
 
@@ -65,7 +70,6 @@ class GoogleAgendaController {
         product.releases?.each { r->
             r.sprints.asList().each { s->
                  sprints.add(s)
-                 println "date :" + s.startDate
             }
         }
         return sprints.asList()
