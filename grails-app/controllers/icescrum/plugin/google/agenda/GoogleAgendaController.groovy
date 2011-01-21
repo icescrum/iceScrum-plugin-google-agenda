@@ -9,6 +9,11 @@ import grails.converters.JSON
 
 import com.google.gdata.client.calendar.CalendarService
 import com.google.gdata.util.AuthenticationException
+import java.net.URL
+import com.google.gdata.data.DateTime
+import com.google.gdata.data.PlainTextConstruct
+import com.google.gdata.data.calendar.CalendarEventEntry
+import com.google.gdata.data.extensions.When
 
 @Secured('scrumMaster()')
 class GoogleAgendaController {
@@ -60,7 +65,7 @@ class GoogleAgendaController {
         CalendarService googleService = getConnection(googleAccount.login, googleAccount.password)
         int i = 0
         getSprints().each {
-            createEvent(googleService, "sprint-" + i++, "no comment", it.startDate, it.endDate)
+            createEvent(googleService, "sprint-" + i++, "no comment", convertDate(it.startDate), convertDate(it.endDate))
         }
         redirect(action:'index')
     }
@@ -74,5 +79,30 @@ class GoogleAgendaController {
             }
         }
         return sprints.asList()
+    }
+
+    def convertDate (Date date) {
+        return date.toString().replace(" ", "T").substring(0,date.toString().indexOf("."));
+    }
+
+   def createEvent(googleService, nom, commentaire, dateDep, dateFin) {
+        println dateDep + "-> " + dateFin
+
+        CalendarEventEntry newEvent = new CalendarEventEntry()
+        newEvent.setTitle(new PlainTextConstruct(nom))
+        newEvent.setContent(new PlainTextConstruct(commentaire))
+        // Time : "2010-12-31T23:59:59"
+        DateTime startTime = DateTime.parseDateTime(dateDep)
+        DateTime endTime = DateTime.parseDateTime(dateFin)
+        When eventTimes = new When()
+        eventTimes.setStartTime(startTime)
+        eventTimes.setEndTime(endTime)
+        newEvent.addTime(eventTimes)
+
+        GoogleAccount projectAccount = GoogleAccount.findByProduct(Product.get(params.product))
+        URL postUrl = new URL("https://www.google.com/calendar/feeds/"+projectAccount.login+"/private/full")
+
+        // Send the request and receive the response:
+        CalendarEventEntry insertedEntry = googleService.insert(postUrl, newEvent)
     }
 }
