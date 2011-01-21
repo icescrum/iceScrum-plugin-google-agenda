@@ -12,6 +12,7 @@ import com.google.gdata.util.AuthenticationException
 
 @Secured('scrumMaster()')
 class GoogleAgendaController {
+    static final pluginName = 'ice-scrum-plugin-google-agenda'
     static final id = 'googleAgenda'
     static ui = true
     static menuBar = MenuBarSupport.productDynamicBar('is.ui.googleAgenda',id , false, 3)
