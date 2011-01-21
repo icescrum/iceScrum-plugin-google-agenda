@@ -43,7 +43,7 @@ class GoogleAgendaController {
         GoogleAccount projectAccount = new GoogleAccount(login:params.googleLogin, password:params.googlePassword, product:Product.get(params.product))
         if(getConnection(params.googleLogin, params.googlePassword)) {
             projectAccount.save()
-            render(status:200,contentType:'application/json', text: [notice: [text: message(code:'Compte ok')]] as JSON)
+            redirect(action:'index')
         }
         else
             render(status:400,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.error.wrongCredentials')]] as JSON)
@@ -101,8 +101,10 @@ class GoogleAgendaController {
 
         GoogleAccount projectAccount = GoogleAccount.findByProduct(Product.get(params.product))
         URL postUrl = new URL("https://www.google.com/calendar/feeds/"+projectAccount.login+"/private/full")
+        println postUrl
 
         // Send the request and receive the response:
         CalendarEventEntry insertedEntry = googleService.insert(postUrl, newEvent)
+        println insertedEntry
     }
 }
