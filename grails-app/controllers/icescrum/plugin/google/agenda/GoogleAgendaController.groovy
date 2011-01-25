@@ -1,19 +1,16 @@
 package icescrum.plugin.google.agenda
 
 import grails.plugins.springsecurity.Secured
-import org.icescrum.web.support.MenuBarSupport
-import org.icescrum.core.domain.Product
-import org.icescrum.core.domain.Sprint
-
-import grails.converters.JSON
 
 import com.google.gdata.client.calendar.CalendarService
-import com.google.gdata.util.AuthenticationException
-import java.net.URL
 import com.google.gdata.data.DateTime
 import com.google.gdata.data.PlainTextConstruct
 import com.google.gdata.data.calendar.CalendarEventEntry
 import com.google.gdata.data.extensions.When
+import com.google.gdata.util.AuthenticationException
+import grails.converters.JSON
+import org.icescrum.core.domain.Product
+import org.icescrum.web.support.MenuBarSupport
 
 @Secured('scrumMaster()')
 class GoogleAgendaController {

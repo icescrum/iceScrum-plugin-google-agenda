@@ -15,7 +15,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-1.3.6" level="application" />
     <orderEntry type="module-library" exported="">
       <library name="Grails User Library">
         <CLASSES>
@@ -26,6 +25,7 @@
         <jarDirectory url="file://$USER_HOME$/.grails/1.3.6/projects/iceScrum-plugin-google-agenda/plugins/tomcat-1.3.6/lib" recursive="false" />
       </library>
     </orderEntry>
+    <orderEntry type="library" scope="PROVIDED" name="grails-1.3.6" level="application" />
   </component>
 </module>
 
