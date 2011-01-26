@@ -1,4 +1,5 @@
 <div class="colset-2 clearfix">
+
     <div class="col1">
       <div class="panel-box">
         <h3 class="panel-box-title">${message(code:'is.googleAgenda.ui.registeredAccountInformation')}</h3>
@@ -7,11 +8,13 @@
             <p>
                <is:button
                 url="[controller:id, action:'updateCalendar', params:[product:params.product]]"
-                type="link"
+                type="link" 
+                remote="true"
+                history="false"
+                onSuccess="jQuery.icescrum.renderNotice(data.notice.text,data.notice.type)"
                 value="${message(code: 'is.googleAgenda.ui.updateCalendar')}" />
             </p>
           </div>
-
       </div>
     </div>
 
@@ -20,11 +23,8 @@
         <h3 class="panel-box-title">
         </h3>
           <div class="panel-box-content">
-
               No description currently defined
-
           </div>
-
       </div>
     </div>
-  </div>
+</div>

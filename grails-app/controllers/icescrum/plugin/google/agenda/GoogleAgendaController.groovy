@@ -17,8 +17,8 @@ class GoogleAgendaController {
     static final pluginName = 'ice-scrum-plugin-google-agenda'
     static final id = 'googleAgenda'
     static ui = true
-    static menuBar = MenuBarSupport.productDynamicBar('is.ui.googleAgenda',id , false, 3)
-    static window =  [title:'is.ui.googleAgenda',help:'is.ui.googleAgenda.help',toolbar:false]
+    static menuBar = MenuBarSupport.productDynamicBar('is.googleAgenda.ui',id , false, 3)
+    static window =  [title:'is.googleAgenda.ui',help:'is.googleAgenda.ui.help',toolbar:false]
 
     def index = {
         GoogleCalendarSettings projectAccount = GoogleCalendarSettings.findByProduct(Product.get(params.product))
@@ -62,6 +62,7 @@ class GoogleAgendaController {
         CalendarService googleService = getConnection(projectAccount.login, projectAccount.password)
         int i = 1
         // Vider l'agenda !!
+        // Gestion des erreurs !!!
         // Ajout des sprints à l'agenda
         getSprints().each {
             createSingleEvent(googleService,
@@ -70,10 +71,8 @@ class GoogleAgendaController {
                               iSDateToGoogleDate(it.startDate),
                               iSDateToGoogleDate(it.endDate))
         }
-        // Ajouter les scrum meetings si desirés
-
-        flash.notice = [text: "Okaaaay", type: 'notice']
-        redirect(action:'index',params:[product:params.product])
+        // Ajouter les scrum meetings si desirés !!!
+        render(status:200,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.success.updateCalendar')]] as JSON)
     }
 
     def getSprints = {
