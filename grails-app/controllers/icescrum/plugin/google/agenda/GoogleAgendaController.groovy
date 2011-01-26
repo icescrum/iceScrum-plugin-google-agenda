@@ -21,7 +21,7 @@ class GoogleAgendaController {
     static window =  [title:'is.ui.googleAgenda',help:'is.ui.googleAgenda.help',toolbar:false]
 
     def index = {
-        GoogleAccount projectAccount = GoogleAccount.findByProduct(Product.get(params.product))
+        GoogleCalendarSettings projectAccount = GoogleCalendarSettings.findByProduct(Product.get(params.product))
         if (projectAccount) {
             render template:'displayAccount',
                   plugin:'iceScrum-plugin-google-agenda',
@@ -37,7 +37,7 @@ class GoogleAgendaController {
     }
 
     def saveAccount = {
-        GoogleAccount projectAccount = new GoogleAccount(login:params.googleLogin, password:params.googlePassword, product:Product.get(params.product))
+        GoogleCalendarSettings projectAccount = new GoogleCalendarSettings(login:params.googleLogin, password:params.googlePassword, product:Product.get(params.product))
         if(getConnection(params.googleLogin, params.googlePassword)) {
             projectAccount.save()
             redirect(action:'index')
@@ -58,8 +58,8 @@ class GoogleAgendaController {
     }
 
     def updateCalendar = {
-        GoogleAccount googleAccount = GoogleAccount.findByProduct(Product.get(params.product))
-        CalendarService googleService = getConnection(googleAccount.login, googleAccount.password)
+        GoogleCalendarSettings projectAccount = GoogleCalendarSettings.findByProduct(Product.get(params.product))
+        CalendarService googleService = getConnection(projectAccount.login, projectAccount.password)
         int i = 1
         // Vider l'agenda !!
         // Ajout des sprints à l'agenda
@@ -100,7 +100,7 @@ class GoogleAgendaController {
         eventTimes.setEndTime(DateTime.parseDateTime(endDate))
         newEvent.addTime(eventTimes)
 
-        GoogleAccount projectAccount = GoogleAccount.findByProduct(Product.get(params.product))
+        GoogleCalendarSettings projectAccount = GoogleCalendarSettings.findByProduct(Product.get(params.product))
         URL postUrl = new URL("https://www.google.com/calendar/feeds/"+projectAccount.login+"/private/full")
 
         CalendarEventEntry insertedEntry = googleService.insert(postUrl, newEvent)
