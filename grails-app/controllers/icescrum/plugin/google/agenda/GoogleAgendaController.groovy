@@ -40,7 +40,7 @@ class GoogleAgendaController {
         GoogleCalendarSettings projectAccount = new GoogleCalendarSettings(login:params.googleLogin, password:params.googlePassword, product:Product.get(params.product))
         if(getConnection(params.googleLogin, params.googlePassword)) {
             projectAccount.save()
-            redirect(action:'index')
+            redirect(action:'index',params:[product:params.product])
         }
         else
             render(status:400,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.error.wrongCredentials')]] as JSON)
@@ -71,8 +71,9 @@ class GoogleAgendaController {
                               iSDateToGoogleDate(it.endDate))
         }
         // Ajouter les scrum meetings si desirés
-        // Redirection
-        redirect(action:'index')
+
+        flash.notice = [text: "Okaaaay", type: 'notice']
+        redirect(action:'index',params:[product:params.product])
     }
 
     def getSprints = {

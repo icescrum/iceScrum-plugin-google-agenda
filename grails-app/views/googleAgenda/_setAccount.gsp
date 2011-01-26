@@ -11,6 +11,9 @@
         </is:fieldInput>
         <is:buttonBar id="googleButtonBar">
           <is:button
+                    remote="true"
+                    history="false"
+                    update="window-content-${id}"
                     type="submit"
                     url="[controller:id, action:'saveAccount', params:[product:params.product]]"
                     value="${message(code:'is.googleAgenda.ui.connectAccount')}" />
