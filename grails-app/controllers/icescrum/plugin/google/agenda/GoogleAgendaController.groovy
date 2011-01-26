@@ -91,13 +91,13 @@ class GoogleAgendaController {
     }
 
    // Date de format :  Time : "2010-12-31T23:59:59"
-   def createSingleEvent(googleService, nom, commentaire, dateDep, dateFin) {
+   def createSingleEvent(googleService, eventName, comment, startDate, endDate) {
         CalendarEventEntry newEvent = new CalendarEventEntry()
-        newEvent.setTitle(new PlainTextConstruct(nom))
-        newEvent.setContent(new PlainTextConstruct(commentaire))
+        newEvent.setTitle(new PlainTextConstruct(eventName))
+        newEvent.setContent(new PlainTextConstruct(comment))
         When eventTimes = new When()
-        eventTimes.setStartTime(DateTime.parseDateTime(dateDep))
-        eventTimes.setEndTime(DateTime.parseDateTime(dateFin))
+        eventTimes.setStartTime(DateTime.parseDateTime(startDate))
+        eventTimes.setEndTime(DateTime.parseDateTime(endDate))
         newEvent.addTime(eventTimes)
 
         GoogleAccount projectAccount = GoogleAccount.findByProduct(Product.get(params.product))
