@@ -32,8 +32,6 @@ class GoogleAgendaController {
                 plugin:'iceScrum-plugin-google-agenda',
                 model:[id:id]
         }
-
-        getSprints()
     }
 
     def saveAccount = {
@@ -57,42 +55,38 @@ class GoogleAgendaController {
         return googleService
     }
 
+    // Vider l'agenda !!
+    // Gestion des erreurs !!!
+    // Ajouter les scrum meetings si desirés !!!
     def updateCalendar = {
         GoogleCalendarSettings projectAccount = GoogleCalendarSettings.findByProduct(Product.get(params.product))
         CalendarService googleService = getConnection(projectAccount.login, projectAccount.password)
-        int i = 1
-        // Vider l'agenda !!
-        // Gestion des erreurs !!!
-        // Ajout des sprints à l'agenda
-        getSprints().each {
-            createSingleEvent(googleService,
-                              "Sprint #" + i++,
-                              "no comment",
-                              iSDateToGoogleDate(it.startDate),
-                              iSDateToGoogleDate(it.endDate))
-        }
-        // Ajouter les scrum meetings si desirés !!!
+
+        addSprints (googleService)
+
         render(status:200,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.success.updateCalendar')]] as JSON)
     }
 
-    def getSprints = {
-        def sprints = []
+    def addSprints (googleService) {
+        int sprint = 1
         def product = Product.get(params.product);
         product.releases?.each { r->
             r.sprints.asList().each { s->
-                 sprints.add(s)
+                createSingleEvent(googleService,
+                              r.name + "-Sprint#" + sprint++,
+                              "no comment",
+                              iSDateToGoogleDate(s.startDate),
+                              iSDateToGoogleDate(s.endDate))
             }
+            sprint = 1
         }
-        return sprints.asList()
     }
 
     def iSDateToGoogleDate (Date date) {
-        println("Date version originale : " + date.toString())
         String firstPart = date.toString().substring(0,10)
         String secondPart = date.toString().substring(11,date.toString().indexOf("."))
         if(secondPart.equals("00:00:00")) {
-          secondPart = "01:00:00"
-
+            secondPart = "01:00:00"
         }
         return firstPart + "T" + secondPart
     }
