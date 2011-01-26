@@ -61,9 +61,17 @@ class GoogleAgendaController {
         GoogleAccount googleAccount = GoogleAccount.findByProduct(Product.get(params.product))
         CalendarService googleService = getConnection(googleAccount.login, googleAccount.password)
         int i = 1
+        // Vider l'agenda !!
+        // Ajout des sprints à l'agenda
         getSprints().each {
-            createEvent(googleService, "Sprint #" + i++, "no comment", convertDate(it.startDate), convertDate(it.endDate))
+            createSingleEvent(googleService,
+                              "Sprint #" + i++,
+                              "no comment",
+                              iSDateToGoogleDate(it.startDate),
+                              iSDateToGoogleDate(it.endDate))
         }
+        // Ajouter les scrum meetings si desirés
+        // Redirection
         redirect(action:'index')
     }
 
@@ -78,30 +86,23 @@ class GoogleAgendaController {
         return sprints.asList()
     }
 
-    def convertDate (Date date) {
+    def iSDateToGoogleDate (Date date) {
         return date.toString().replace(" ", "T").substring(0,date.toString().indexOf("."));
     }
 
-   def createEvent(googleService, nom, commentaire, dateDep, dateFin) {
-        println dateDep + "-> " + dateFin
-
+   // Date de format :  Time : "2010-12-31T23:59:59"
+   def createSingleEvent(googleService, nom, commentaire, dateDep, dateFin) {
         CalendarEventEntry newEvent = new CalendarEventEntry()
         newEvent.setTitle(new PlainTextConstruct(nom))
         newEvent.setContent(new PlainTextConstruct(commentaire))
-        // Time : "2010-12-31T23:59:59"
-        DateTime startTime = DateTime.parseDateTime(dateDep)
-        DateTime endTime = DateTime.parseDateTime(dateFin)
         When eventTimes = new When()
-        eventTimes.setStartTime(startTime)
-        eventTimes.setEndTime(endTime)
+        eventTimes.setStartTime(DateTime.parseDateTime(dateDep))
+        eventTimes.setEndTime(DateTime.parseDateTime(dateFin))
         newEvent.addTime(eventTimes)
 
         GoogleAccount projectAccount = GoogleAccount.findByProduct(Product.get(params.product))
         URL postUrl = new URL("https://www.google.com/calendar/feeds/"+projectAccount.login+"/private/full")
-        println postUrl
 
-        // Send the request and receive the response:
         CalendarEventEntry insertedEntry = googleService.insert(postUrl, newEvent)
-        println insertedEntry
     }
 }
