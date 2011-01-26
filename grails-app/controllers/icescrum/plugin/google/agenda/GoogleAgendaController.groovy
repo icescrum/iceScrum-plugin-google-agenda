@@ -88,7 +88,14 @@ class GoogleAgendaController {
     }
 
     def iSDateToGoogleDate (Date date) {
-        return date.toString().replace(" ", "T").substring(0,date.toString().indexOf("."));
+        println("Date version originale : " + date.toString())
+        String firstPart = date.toString().substring(0,10)
+        String secondPart = date.toString().substring(11,date.toString().indexOf("."))
+        if(secondPart.equals("00:00:00")) {
+          secondPart = "01:00:00"
+
+        }
+        return firstPart + "T" + secondPart
     }
 
    // Date de format :  Time : "2010-12-31T23:59:59"
