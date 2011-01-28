@@ -33,7 +33,7 @@
                            remote="true"
                            history="false"
                            type="submit"
-                           url="[controller:id, action:'setGoogleCalendarSettings', params:[product:params.product]]"
+                           url="[controller:id, action:'setSettings', params:[product:params.product]]"
                            onSuccess="jQuery.icescrum.renderNotice(data.notice.text,data.notice.type)"
                            value="${message(code: 'is.googleAgenda.ui.saveDisplaySettings')}" />
                       <p> </p>

@@ -47,7 +47,6 @@ class GoogleAgendaController {
     }
 
     def setSettings = {
-        println "called setGoogleCalendarSettings which returned > " + params.displaySettingsState
 
         render(status:200,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.success.setGoogleCalendarSettings')]] as JSON)
     }
