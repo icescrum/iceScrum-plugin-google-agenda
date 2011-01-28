@@ -9,7 +9,7 @@
               <p>
                  <is:button
                   url="[controller:id, action:'updateCalendar', params:[product:params.product]]"
-                  type="link"
+                  type="submit"
                   remote="true"
                   history="false"
                   onSuccess="jQuery.icescrum.renderNotice(data.notice.text,data.notice.type)"
@@ -24,14 +24,17 @@
               <h3 class="panel-box-title">${message(code:'is.googleAgenda.ui.displaySettingsInformationTitle')}</h3>
               <div class="panel-box-content">
                   <p>${message(code:'is.googleAgenda.ui.displaySettingsInformation')}</p>
-                  <p> </p>
                   <form name="googleForm" method="post" onsubmit="$('input[name=googleButton]').click();return false;">
-                          <is:checkbox>
-                          </is:checkbox>
+                          <is:checkbox  name="displaySettingsState"
+                                        value="${displayDailyMeetings}"
+                                        label="${message(code: 'is.googleAgenda.ui.allowRegularMeetings')}" />
                           <p> </p>
                           <is:button
-                           url="[controller:id, action:'saveDisplaySettings', params:[product:params.product]]"
-                           type="link"
+                           remote="true"
+                           history="false"
+                           type="submit"
+                           url="[controller:id, action:'setGoogleCalendarSettings', params:[product:params.product]]"
+                           onSuccess="jQuery.icescrum.renderNotice(data.notice.text,data.notice.type)"
                            value="${message(code: 'is.googleAgenda.ui.saveDisplaySettings')}" />
                       <p> </p>
                     <p> </p>

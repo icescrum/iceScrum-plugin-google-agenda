@@ -25,7 +25,7 @@ class GoogleAgendaController {
         if (projectAccount) {
             render template:'displayAccount',
                   plugin:'iceScrum-plugin-google-agenda',
-                  model:[id:id,login:projectAccount.login]
+                  model:[id:id,login:projectAccount.login, displayDailyMeetings:projectAccount.displayDailyMeetings]
         }
         else {
             render template:'setAccount',
@@ -42,6 +42,14 @@ class GoogleAgendaController {
         }
         else
             render(status:400,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.error.wrongCredentials')]] as JSON)
+
+        println "setGoogleCalendarSettings has state > " + params.displaySettingsState
+    }
+
+    def setSettings = {
+        println "called setGoogleCalendarSettings which returned > " + params.displaySettingsState
+
+        render(status:200,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.success.setGoogleCalendarSettings')]] as JSON)
     }
 
     def getConnection(login, password) {

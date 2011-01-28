@@ -6,7 +6,7 @@ class GoogleCalendarSettings {
 
     String login
     String password
-    boolean displayMeetings = false
+    boolean displayDailyMeetings = false
 
     static constraints = {
       login(nullable:false)
