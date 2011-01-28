@@ -47,8 +47,13 @@ class GoogleAgendaController {
     }
 
     def setSettings = {
-
-        render(status:200,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.success.setGoogleCalendarSettings')]] as JSON)
+        GoogleCalendarSettings projectAccount = new GoogleCalendarSettings(login:params.googleLogin, password:params.googlePassword, product:Product.get(params.product))
+        println "state onLoad > " + params.displayDailyMeetings
+        projectAccount.displayDailyMeetings = (params.displaySettingsState) ? true : false
+        if(projectAccount.save())
+          render(status:200,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.success.setGoogleCalendarSettings')]] as JSON)
+        else
+          render(status:400,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.error.setGoogleCalendarSettings')]] as JSON)
     }
 
     def getConnection(login, password) {
