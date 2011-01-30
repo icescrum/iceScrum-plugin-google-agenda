@@ -87,35 +87,37 @@ class GoogleAgendaController {
                 createSingleEvent(googleService,
                               r.name + "-Sprint#" + sprint++,
                               "no comment",
-                              iSDateToGoogleDate(s.startDate),
-                              iSDateToGoogleDate(s.endDate))
+                              iSDateToGoogleDate(s.startDate,true,false),
+                              iSDateToGoogleDate(s.endDate,true,true))
             }
             sprint = 1
         }
     }
 
-    def iSDateToGoogleDate (Date date) {
-        String firstPart = date.toString().substring(0,10)
-        String secondPart = date.toString().substring(11,date.toString().indexOf("."))
-        if(secondPart.equals("00:00:00")) {
-            secondPart = "01:00:00"
-        }
-        return firstPart + "T" + secondPart
+    def iSDateToGoogleDate (Date date, isAllDay, isEndDate) {
+        // Google inclut la première exclut la deuxième date d'un évènement
+        // on incrémente donc d'un jour la date de fin si c'est un évènement d'une journée
+        // il faudrait de même incrémenter d'une minute la date de fin si c'est un évènement en heures
+        if(isAllDay && isEndDate)
+            date++
+        DateTime googleDate = DateTime.parseDateTime(date.format("yyyy-MM-dd'T'HH:mm:ss"))
+        if(isAllDay)
+            googleDate.setDateOnly(true)
+        return googleDate
     }
 
-   // Date de format :  Time : "2010-12-31T23:59:59"
    def createSingleEvent(googleService, eventName, comment, startDate, endDate) {
         CalendarEventEntry newEvent = new CalendarEventEntry()
         newEvent.setTitle(new PlainTextConstruct(eventName))
         newEvent.setContent(new PlainTextConstruct(comment))
         When eventTimes = new When()
-        eventTimes.setStartTime(DateTime.parseDateTime(startDate))
-        eventTimes.setEndTime(DateTime.parseDateTime(endDate))
+        eventTimes.setStartTime(startDate)
+        eventTimes.setEndTime(endDate)
         newEvent.addTime(eventTimes)
 
         GoogleCalendarSettings projectAccount = GoogleCalendarSettings.findByProduct(Product.get(params.product))
         URL postUrl = new URL("https://www.google.com/calendar/feeds/"+projectAccount.login+"/private/full")
 
-        CalendarEventEntry insertedEntry = googleService.insert(postUrl, newEvent)
+        return googleService.insert(postUrl, newEvent)
     }
 }
