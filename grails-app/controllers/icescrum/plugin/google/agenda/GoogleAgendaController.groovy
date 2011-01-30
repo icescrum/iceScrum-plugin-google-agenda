@@ -21,11 +21,11 @@ class GoogleAgendaController {
     static window =  [title:'is.googleAgenda.ui',help:'is.googleAgenda.ui.help',toolbar:false]
 
     def index = {
-        GoogleCalendarSettings projectAccount = GoogleCalendarSettings.findByProduct(Product.get(params.product))
-        if (projectAccount) {
-            render template:'displayAccount',
+        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
+        if (googleSettings) {
+            render template:'settings',
                   plugin:'iceScrum-plugin-google-agenda',
-                  model:[id:id,login:projectAccount.login, displayDailyMeetings:projectAccount.displayDailyMeetings]
+                  model:[id:id,login:googleSettings.login, displayDailyMeetings:googleSettings.displayDailyMeetings]
         }
         else {
             render template:'setAccount',
@@ -35,34 +35,31 @@ class GoogleAgendaController {
     }
 
     def saveAccount = {
-        GoogleCalendarSettings projectAccount = new GoogleCalendarSettings(login:params.googleLogin, password:params.googlePassword, product:Product.get(params.product))
+        GoogleCalendarSettings googleSettings = new GoogleCalendarSettings(login:params.googleLogin, password:params.googlePassword, product:Product.get(params.product))
         if(getConnection(params.googleLogin, params.googlePassword)) {
-            projectAccount.save()
+            googleSettings.save()
             redirect(action:'index',params:[product:params.product])
         }
         else
             render(status:400,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.error.wrongCredentials')]] as JSON)
-
-        println "setGoogleCalendarSettings has state > " + params.displaySettingsState
     }
 
-    def setSettings = {
-        GoogleCalendarSettings projectAccount = new GoogleCalendarSettings(login:params.googleLogin, password:params.googlePassword, product:Product.get(params.product))
-        println "state onLoad > " + params.displayDailyMeetings
-        projectAccount.displayDailyMeetings = (params.displaySettingsState) ? true : false
-        if(projectAccount.save())
-          render(status:200,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.success.setGoogleCalendarSettings')]] as JSON)
+    def saveSettings = {
+        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
+        googleSettings.displayDailyMeetings = (params.displayDailyMeetings) ? true : false
+        if(googleSettings.save())
+            render(status:200,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.success.saveSettings')]] as JSON)
         else
-          render(status:400,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.error.setGoogleCalendarSettings')]] as JSON)
+            render(status:400,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.error.saveSettings')]] as JSON)
     }
 
     def getConnection(login, password) {
         CalendarService googleService = new CalendarService("test")
         try {
-          googleService.setUserCredentials(login, password);
+            googleService.setUserCredentials(login, password);
         }
         catch (AuthenticationException e) {
-          return false
+            return false
         }
         return googleService
     }
@@ -71,11 +68,9 @@ class GoogleAgendaController {
     // Gestion des erreurs !!!
     // Ajouter les scrum meetings si desirés !!!
     def updateCalendar = {
-        GoogleCalendarSettings projectAccount = GoogleCalendarSettings.findByProduct(Product.get(params.product))
-        CalendarService googleService = getConnection(projectAccount.login, projectAccount.password)
-
+        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
+        CalendarService googleService = getConnection(googleSettings.login, googleSettings.password)
         addSprints (googleService)
-
         render(status:200,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.success.updateCalendar')]] as JSON)
     }
 
@@ -115,8 +110,8 @@ class GoogleAgendaController {
         eventTimes.setEndTime(endDate)
         newEvent.addTime(eventTimes)
 
-        GoogleCalendarSettings projectAccount = GoogleCalendarSettings.findByProduct(Product.get(params.product))
-        URL postUrl = new URL("https://www.google.com/calendar/feeds/"+projectAccount.login+"/private/full")
+        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
+        URL postUrl = new URL("https://www.google.com/calendar/feeds/"+googleSettings.login+"/private/full")
 
         return googleService.insert(postUrl, newEvent)
     }

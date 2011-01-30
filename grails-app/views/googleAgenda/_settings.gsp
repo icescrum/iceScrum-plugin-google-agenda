@@ -1,11 +1,10 @@
 <div class="dashboard">
   <div class="colset-2 clearfix">
-
       <div class="col1">
         <div class="panel-box">
-          <h3 class="panel-box-title">${message(code:'is.googleAgenda.ui.registeredAccountInformation')}</h3>
+          <h3 class="panel-box-title">${message(code:'is.googleAgenda.ui.accountTitle')}</h3>
             <div class="panel-box-content">
-              <p>${message(code:'is.googleAgenda.ui.registeredAccountIs')} <b>${login}</b></p>
+              <p>${message(code:'is.googleAgenda.ui.account')} <b>${login}</b></p>
               <p>
                  <is:button
                   url="[controller:id, action:'updateCalendar', params:[product:params.product]]"
@@ -15,30 +14,30 @@
                   onSuccess="jQuery.icescrum.renderNotice(data.notice.text,data.notice.type)"
                   value="${message(code: 'is.googleAgenda.ui.updateCalendar')}" />
               </p>
-              <p> </p>
+              <br/>
             </div>
         </div>
       </div>
       <div class="col2">
           <div class="panel-box">
-              <h3 class="panel-box-title">${message(code:'is.googleAgenda.ui.displaySettingsInformationTitle')}</h3>
+              <h3 class="panel-box-title">${message(code:'is.googleAgenda.ui.settingsTitle')}</h3>
               <div class="panel-box-content">
-                  <p>${message(code:'is.googleAgenda.ui.displaySettingsInformation')}</p>
+                  <p>${message(code:'is.googleAgenda.ui.settings')}</p>
                   <form name="googleForm" method="post" onsubmit="$('input[name=googleButton]').click();return false;">
-                          <is:checkbox  name="displaySettingsState"
+                          <is:checkbox  name="displayDailyMeetings"
                                         value="${displayDailyMeetings}"
-                                        label="${message(code: 'is.googleAgenda.ui.allowRegularMeetings')}" />
-                          <p> </p>
+                                        label="${message(code: 'is.googleAgenda.ui.displayDailyMeetings')}" />
+                          <br/>
+                          <br/>
                           <is:button
                            remote="true"
                            history="false"
                            type="submit"
-                           url="[controller:id, action:'setSettings', params:[product:params.product]]"
+                           url="[controller:id, action:'saveSettings', params:[product:params.product]]"
                            onSuccess="jQuery.icescrum.renderNotice(data.notice.text,data.notice.type)"
-                           value="${message(code: 'is.googleAgenda.ui.saveDisplaySettings')}" />
-                      <p> </p>
-                    <p> </p>
+                           value="${message(code: 'is.googleAgenda.ui.saveSettings')}" />
                   </form>
+                  <br/>
               </div>
           </div>
       </div>
