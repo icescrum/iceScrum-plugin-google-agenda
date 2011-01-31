@@ -74,11 +74,11 @@ class GoogleAgendaController {
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
         CalendarService googleService = getConnection(googleSettings.login, googleSettings.password)
 
-        addSprints (googleService)
+        addScrumEvents (googleService)
         render(status:200,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.success.updateCalendar')]] as JSON)
     }
 
-    def addSprints (googleService) {
+    def addScrumEvents (googleService) {
         int sprint = 1
         def product = Product.get(params.product);
         product.releases?.each { r->
@@ -88,6 +88,14 @@ class GoogleAgendaController {
                               "no comment",
                               iSDateToGoogleDate(s.startDate,true,false),
                               iSDateToGoogleDate(s.endDate,true,true))
+                GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
+                if(googleSettings.displayDailyMeetings){
+                  Date startHour = new Date();
+                  startHour.hours = 9;
+                  startHour.minutes = 0;
+                  startHour.seconds = 0;
+                  createScrumMeetingEvent(googleService, s.startDate, s.endDate, startHour)
+                }
 
             }
             sprint = 1
