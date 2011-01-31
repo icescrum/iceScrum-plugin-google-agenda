@@ -11,6 +11,7 @@ import com.google.gdata.util.AuthenticationException
 import grails.converters.JSON
 import org.icescrum.core.domain.Product
 import org.icescrum.web.support.MenuBarSupport
+import org.icescrum.core.domain.preferences.ProductPreferences
 import com.google.gdata.data.extensions.Recurrence
 import java.text.SimpleDateFormat
 import java.text.DateFormat
@@ -69,11 +70,9 @@ class GoogleAgendaController {
 
     // Vider l'agenda !!
     // Gestion des erreurs !!!
-    // Ajouter les scrum meetings si desirés !!!
     def updateCalendar = {
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
         CalendarService googleService = getConnection(googleSettings.login, googleSettings.password)
-
         addScrumEvents (googleService)
         render(status:200,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.success.updateCalendar')]] as JSON)
     }
@@ -88,15 +87,16 @@ class GoogleAgendaController {
                               "no comment",
                               iSDateToGoogleDate(s.startDate,true,false),
                               iSDateToGoogleDate(s.endDate,true,true))
-                GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
+                Product currentProduct = Product.get(params.product)
+                GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(currentProduct)
+                ProductPreferences preferences = currentProduct.preferences
                 if(googleSettings.displayDailyMeetings){
-                  Date startHour = new Date();
-                  startHour.hours = 9;
-                  startHour.minutes = 0;
-                  startHour.seconds = 0;
-                  createScrumMeetingEvent(googleService, s.startDate, s.endDate, startHour)
+                    def hour = preferences.dailyMeetingHour.split(':')
+                    Date startHour = new Date();
+                    startHour.hours = Integer.parseInt(hour[0]);
+                    startHour.minutes = Integer.parseInt(hour[1]);
+                    createScrumMeetingEvent(googleService, s.startDate, s.endDate, startHour)
                 }
-
             }
             sprint = 1
         }
@@ -114,67 +114,61 @@ class GoogleAgendaController {
         return googleDate
     }
 
-   def createSingleEvent(googleService, eventName, comment, startDate, endDate) {
+    def createSingleEvent(googleService, eventName, comment, startDate, endDate) {
         CalendarEventEntry newEvent = getNewEvent(eventName, comment)
         When eventTimes = new When()
         eventTimes.setStartTime(startDate)
         eventTimes.setEndTime(endDate)
         newEvent.addTime(eventTimes)
+        return sendEvent(googleService, newEvent)
+    }
+
+    def createScrumMeetingEvent(googleService,startDate, endDate, startHour){
+        // Days of week: SU:1, MO:2, TH:3, WE:4, TU:5, FR:6, SA:7
+        switch(startDate.getAt(Calendar.DAY_OF_WEEK)){
+            case 1 :
+                startDate += 2
+                break
+            case 6 :
+                startDate += 3
+                break
+            case 7 :
+                startDate += 3
+                break
+            default :
+                startDate += 1
+        }
+
+        DateFormat startFormatter = new SimpleDateFormat("yyyyMMdd'T'")
+        DateFormat hourFormatter = new SimpleDateFormat("HHmmss")
+        DateFormat endFormatter = new SimpleDateFormat("yyyyMMdd")
+
+        def recurData = "DTSTART;VALUE=PERIOD:"
+        recurData += startFormatter.format(startDate)
+        recurData += hourFormatter.format(startHour)
+        recurData += "/PT15M\r\nRRULE:FREQ=WEEKLY;UNTIL="
+        recurData += endFormatter.format(endDate)
+        recurData += ";BYDAY=MO,TU,WE,TH,FR\r\n"
+
+        Recurrence recur = new Recurrence()
+        recur.setValue(recurData)
+        CalendarEventEntry newEvent = getNewEvent("Scrum Meeting", null)
+        newEvent.setRecurrence(recur)
 
         return sendEvent(googleService, newEvent)
-
     }
 
-   def createScrumMeetingEvent(googleService,startDate, endDate, startHour){
-     // weekDay
-     // SU:1, MO:2, TH:3, WE:4, TU:5, FR:6, SA:7
-     int weekDay = startDate.getAt(Calendar.DAY_OF_WEEK);
-     switch(weekDay){
-      case 1 :
-        startDate = startDate + 2
-      case 6 :
-        startDate = startDate + 3
-        break
-      case 7 :
-        startDate = startDate + 3
-        break
-      default :
-        startDate = startDate + 1
-        break;
-     }
-     CalendarEventEntry newEvent = getNewEvent("Scrum Meeting", null)
-
-     DateFormat startFormatter = new SimpleDateFormat("yyyyMMdd'T'")
-     DateFormat hourFormatter = new SimpleDateFormat("HHmmss")
-     DateFormat endFormatter = new SimpleDateFormat("yyyyMMdd")
-
-     def recurData = "DTSTART;VALUE=PERIOD:"
-     recurData += startFormatter.format(startDate)
-     recurData += hourFormatter.format(startHour)
-     recurData += "/PT15M\r\nRRULE:FREQ=WEEKLY;UNTIL="
-     recurData += endFormatter.format(endDate)
-     recurData += ";BYDAY=MO,TU,WE,TH,FR\r\n"
-
-     Recurrence recur = new Recurrence()
-     recur.setValue(recurData)
-     newEvent.setRecurrence(recur)
-
-     return sendEvent(googleService, newEvent)
-   }
-
-  def getNewEvent(eventName, comment) {
-    CalendarEventEntry newEvent = new CalendarEventEntry()
-    newEvent.setTitle(new PlainTextConstruct(eventName))
-    if(comment){
-      newEvent.setContent(new PlainTextConstruct(comment))
+    def getNewEvent(eventName, comment) {
+        CalendarEventEntry newEvent = new CalendarEventEntry()
+        newEvent.setTitle(new PlainTextConstruct(eventName))
+        if(comment)
+            newEvent.setContent(new PlainTextConstruct(comment))
+        return newEvent
     }
-    return newEvent
-  }
 
-  def sendEvent(googleService, event){
-    GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
-    URL postUrl = new URL("https://www.google.com/calendar/feeds/"+googleSettings.login+"/private/full")
-
-    return googleService.insert(postUrl, event)
-  }
+    def sendEvent(googleService, event){
+        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
+        URL postUrl = new URL("https://www.google.com/calendar/feeds/"+googleSettings.login+"/private/full")
+        return googleService.insert(postUrl, event)
+    }
 }
