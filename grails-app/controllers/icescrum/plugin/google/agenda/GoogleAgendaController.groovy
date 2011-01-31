@@ -14,7 +14,7 @@ import org.icescrum.web.support.MenuBarSupport
 
 @Secured('scrumMaster()')
 class GoogleAgendaController {
-    static final pluginName = 'ice-scrum-plugin-google-agenda'
+    static final pluginName = 'icescrum-plugin-google-agenda'
     static final id = 'googleAgenda'
     static ui = true
     static menuBar = MenuBarSupport.productDynamicBar('is.googleAgenda.ui',id , false, 3)
@@ -24,12 +24,12 @@ class GoogleAgendaController {
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
         if (googleSettings) {
             render template:'settings',
-                  plugin:'iceScrum-plugin-google-agenda',
+                  plugin:pluginName,
                   model:[id:id,login:googleSettings.login, displayDailyMeetings:googleSettings.displayDailyMeetings]
         }
         else {
             render template:'setAccount',
-                plugin:'iceScrum-plugin-google-agenda',
+                plugin:pluginName,
                 model:[id:id]
         }
     }
