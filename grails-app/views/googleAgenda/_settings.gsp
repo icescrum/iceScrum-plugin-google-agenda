@@ -38,7 +38,7 @@
                                         label="${message(code: 'is.googleAgenda.ui.displayReleasePlanning')}" /><br />
                           <is:checkbox  name="displaySprintPlanning"
                                         value="${displaySprintPlanning}"
-                                        label="${message(code: 'is.googleAgenda.ui.displaySprintPlanning')}" /><br />
+                                        label="${message(code: 'is.googleAgenda.ui.displaySprintPlanning')}" /><br /><br />
                           <is:button
                            remote="true"
                            history="false"

@@ -154,6 +154,10 @@ class GoogleAgendaController {
                 startDate += 1
         }
 
+        // Google inclut la première exclut la deuxième date d'un évènement
+        // on incrémente donc d'un jour la date de fin
+        endDate ++
+
         DateFormat startFormatter = new SimpleDateFormat("yyyyMMdd'T'")
         DateFormat hourFormatter = new SimpleDateFormat("HHmmss")
         DateFormat endFormatter = new SimpleDateFormat("yyyyMMdd")
