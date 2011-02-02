@@ -26,9 +26,19 @@
                   <form name="googleForm" method="post" onsubmit="$('input[name=googleButton]').click();return false;">
                           <is:checkbox  name="displayDailyMeetings"
                                         value="${displayDailyMeetings}"
-                                        label="${message(code: 'is.googleAgenda.ui.displayDailyMeetings')}" />
-                          <br/>
-                          <br/>
+                                        label="${message(code: 'is.googleAgenda.ui.displayDailyMeetings')}" /><br />
+                          <is:checkbox  name="displaySprintReview"
+                                        value="${displaySprintReview}"
+                                        label="${message(code: 'is.googleAgenda.ui.displaySprintReview')}" /><br />
+                          <is:checkbox  name="displaySprintRetrospective"
+                                        value="${displaySprintRetrospective}"
+                                        label="${message(code: 'is.googleAgenda.ui.displaySprintRetrospective')}" /><br />
+                          <is:checkbox  name="displayReleasePlanning"
+                                        value="${displayReleasePlanning}"
+                                        label="${message(code: 'is.googleAgenda.ui.displaySprintRetrospective')}" /><br />
+                          <is:checkbox  name="displaySprintPlanning"
+                                        value="${displaySprintPlanning}"
+                                        label="${message(code: 'is.googleAgenda.ui.displaySprintRetrospective')}" /><br />
                           <is:button
                            remote="true"
                            history="false"

@@ -33,7 +33,13 @@ class GoogleAgendaController {
         if (googleSettings) {
             render template:'settings',
                   plugin:pluginName,
-                  model:[id:id,login:googleSettings.login, displayDailyMeetings:googleSettings.displayDailyMeetings]
+                  model:[id:id,
+                         login:googleSettings.login,
+                         displayDailyMeetings:googleSettings.displayDailyMeetings,
+                         displaySprintReview:googleSettings.displaySprintReview,
+                         displaySprintRetrospective:googleSettings.displaySprintRetrospective,
+                         displayReleasePlanning:googleSettings.displayReleasePlanning,
+                         displaySprintPlanning:googleSettings.displaySprintPlanning]
         }
         else {
             render template:'setAccount',
@@ -56,6 +62,10 @@ class GoogleAgendaController {
     def saveSettings = {
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
         googleSettings.displayDailyMeetings = (params.displayDailyMeetings) ? true : false
+        googleSettings.displaySprintReview = (params.displaySprintReview) ? true : false
+        googleSettings.displaySprintRetrospective = (params.displaySprintRetrospective) ? true : false
+        googleSettings.displaySprintPlanning = (params.displaySprintPlanning) ? true : false
+        googleSettings.displayReleasePlanning = (params.displayReleasePlanning) ? true : false
         if(googleSettings.save())
             render(status:200,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.success.saveSettings')]] as JSON)
         else
