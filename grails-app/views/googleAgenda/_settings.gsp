@@ -35,10 +35,10 @@
                                         label="${message(code: 'is.googleAgenda.ui.displaySprintRetrospective')}" /><br />
                           <is:checkbox  name="displayReleasePlanning"
                                         value="${displayReleasePlanning}"
-                                        label="${message(code: 'is.googleAgenda.ui.displaySprintRetrospective')}" /><br />
+                                        label="${message(code: 'is.googleAgenda.ui.displayReleasePlanning')}" /><br />
                           <is:checkbox  name="displaySprintPlanning"
                                         value="${displaySprintPlanning}"
-                                        label="${message(code: 'is.googleAgenda.ui.displaySprintRetrospective')}" /><br />
+                                        label="${message(code: 'is.googleAgenda.ui.displaySprintPlanning')}" /><br />
                           <is:button
                            remote="true"
                            history="false"
