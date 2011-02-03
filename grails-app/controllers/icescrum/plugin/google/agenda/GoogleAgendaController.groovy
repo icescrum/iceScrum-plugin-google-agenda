@@ -12,6 +12,7 @@ import com.google.gdata.util.AuthenticationException
 import com.google.gdata.data.calendar.CalendarFeed;
 import grails.converters.JSON
 import org.icescrum.core.domain.Product
+import org.icescrum.core.domain.Sprint
 import org.icescrum.web.support.MenuBarSupport
 import org.icescrum.core.domain.preferences.ProductPreferences
 import com.google.gdata.data.extensions.Recurrence
@@ -27,6 +28,7 @@ class GoogleAgendaController {
     static window =  [title:'is.googleAgenda.ui',help:'is.googleAgenda.ui.help',toolbar:false]
 
     def CALENDAR_NAME = "iceScrum"
+    def SMALL_SPRINT_DURATION = 7
 
     def index = {
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
@@ -98,22 +100,27 @@ class GoogleAgendaController {
         product.releases?.each { r->
             r.sprints.asList().each { s->
                 createSingleEvent(googleService,
-                              r.name + "-Sprint#" + sprint++,
-                              "no comment",
-                              iSDateToGoogleDate(s.startDate,true,false),
-                              iSDateToGoogleDate(s.endDate,true,true))
-                Product currentProduct = Product.get(params.product)
-                GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(currentProduct)
-                ProductPreferences preferences = currentProduct.preferences
-                if(googleSettings.displayDailyMeetings){
-                    def hour = preferences.dailyMeetingHour.split(':')
-                    Date startHour = new Date();
-                    startHour.hours = Integer.parseInt(hour[0]);
-                    startHour.minutes = Integer.parseInt(hour[1]);
-                    createScrumMeetingEvent(googleService, s.startDate, s.endDate, startHour)
-                }
+                                  r.name + "-Sprint#" + sprint++,
+                                  "no comment",
+                                  iSDateToGoogleDate(s.startDate,true,false),
+                                  iSDateToGoogleDate(s.endDate,true,true))
+                if(s.state == Sprint.STATE_INPROGRESS)
+                    addSprintMeetings(googleService, s.startDate, s.endDate)
             }
             sprint = 1
+        }
+    }
+
+    def addSprintMeetings(googleService, startDate, endDate) {
+        Product currentProduct = Product.get(params.product)
+        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(currentProduct)
+        ProductPreferences preferences = currentProduct.preferences
+        if(googleSettings.displayDailyMeetings){
+            def hour = preferences.dailyMeetingHour.split(':')
+            Date startHour = new Date();
+            startHour.hours = Integer.parseInt(hour[0]);
+            startHour.minutes = Integer.parseInt(hour[1]);
+            createScrumMeetingEvent(googleService, startDate, endDate, startHour)
         }
     }
 
@@ -139,34 +146,31 @@ class GoogleAgendaController {
     }
 
     def createScrumMeetingEvent(googleService,startDate, endDate, startHour){
-        // Days of week: SU:1, MO:2, TH:3, WE:4, TU:5, FR:6, SA:7
+
+        // WeekEnd exclusion
         switch(startDate.getAt(Calendar.DAY_OF_WEEK)){
-            case 1 :
+            case 1 : // SU
+                startDate += 1
+                break
+            case 6 : // FR
                 startDate += 2
                 break
-            case 6 :
-                startDate += 3
+            case 7 : // SA
+                startDate += 2
                 break
-            case 7 :
-                startDate += 3
-                break
-            default :
-                startDate += 1
         }
 
-        // Google inclut la première exclut la deuxième date d'un évènement
-        // on incrémente donc d'un jour la date de fin
-        endDate ++
-
-        DateFormat startFormatter = new SimpleDateFormat("yyyyMMdd'T'")
-        DateFormat hourFormatter = new SimpleDateFormat("HHmmss")
-        DateFormat endFormatter = new SimpleDateFormat("yyyyMMdd")
+        // Add "margins" to the sprint meetings if it lates more than 7 days
+        if(endDate - startDate > SMALL_SPRINT_DURATION)
+            startDate ++
+        else
+            endDate ++
 
         def recurData = "DTSTART;VALUE=PERIOD:"
-        recurData += startFormatter.format(startDate)
-        recurData += hourFormatter.format(startHour)
+        recurData += startDate.format("yyyyMMdd'T'")
+        recurData += startHour.format("HHmmss")
         recurData += "/PT15M\r\nRRULE:FREQ=WEEKLY;UNTIL="
-        recurData += endFormatter.format(endDate)
+        recurData += endDate.format("yyyyMMdd")
         recurData += ";BYDAY=MO,TU,WE,TH,FR\r\n"
 
         Recurrence recur = new Recurrence()
@@ -177,59 +181,73 @@ class GoogleAgendaController {
         return sendEvent(googleService, newEvent)
     }
 
-   def getCalendar(CalendarService service, String calendarName) {
-	    GoogleCalendarSettings projectAccount = GoogleCalendarSettings.findByProduct(Product.get(params.product))
+    def getCalendar(CalendarService service, String calendarName) {
+        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
         URL feedUrl = null
         CalendarFeed resultFeed = null
-		try {
-			feedUrl = new URL("https://www.google.com/calendar/feeds/"+projectAccount.login+"/owncalendars/full")
+        try {
+            feedUrl = new URL("https://www.google.com/calendar/feeds/"+googleSettings.login+"/owncalendars/full")
             resultFeed = service.getFeed(feedUrl, CalendarFeed.class)
-		} catch (Exception e) {
-			e.printStackTrace()
-		}
+        } catch (Exception e) {
+            e.printStackTrace()
+        }
 
-		for(int i = 0; i < resultFeed.getEntries().size(); i++)
-			if(resultFeed.getEntries().get(i).getTitle().getPlainText().equals(calendarName))
-				return resultFeed.getEntries().get(i)
+        for(int i = 0; i < resultFeed.getEntries().size(); i++)
+            if(resultFeed.getEntries().get(i).getTitle().getPlainText().equals(calendarName))
+                return resultFeed.getEntries().get(i)
 
-		return null;
-	}
-
-
-   def createCalendar() {
-        GoogleCalendarSettings projectAccount = GoogleCalendarSettings.findByProduct(Product.get(params.product))
-        CalendarService service = getConnection(projectAccount.login, projectAccount.password)
-		CalendarEntry calendar = getCalendar(service, CALENDAR_NAME)
-		if((calendar == null)) {
-			// Create the calendar
-			calendar = new CalendarEntry()
-			calendar.setTitle(new PlainTextConstruct(CALENDAR_NAME))
-			calendar.setSummary(new PlainTextConstruct("Auto-generated by iceScrum"))
-			// Insert the calendar
-			return postCalendar(service, calendar)
-		}
-		return calendar;
-	}
-
-   def postCalendar(CalendarService service, CalendarEntry calendar) {
-        GoogleCalendarSettings projectAccount = GoogleCalendarSettings.findByProduct(Product.get(params.product))
-		try {
-			URL postUrl = new URL("https://www.google.com/calendar/feeds/"+projectAccount.login+"/owncalendars/full")
-			return service.insert(postUrl, calendar);
-		} catch (Exception e) {
-			e.printStackTrace()
-		}
-		return calendar;
-	}
+        return null;
+    }
 
 
-  def deleteCalendar(CalendarService service, String calendarName) {
-		CalendarEntry calendar = getCalendar(service, calendarName)
-		try {
-			calendar.delete()
-		} catch (Exception e) {
-			System.out.println("Unable to delete calendar : " + calendar.getTitle().getPlainText())
-		}
-	}
+    def createCalendar() {
+        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
+        CalendarService service = getConnection(googleSettings.login, googleSettings.password)
+        CalendarEntry calendar = getCalendar(service, CALENDAR_NAME)
+        if((calendar == null)) {
+            // Create the calendar
+            calendar = new CalendarEntry()
+            calendar.setTitle(new PlainTextConstruct(CALENDAR_NAME))
+            calendar.setSummary(new PlainTextConstruct("Auto-generated by iceScrum"))
+            // Insert the calendar
+            return postCalendar(service, calendar)
+        }
+        return calendar;
+    }
+
+    def postCalendar(CalendarService service, CalendarEntry calendar) {
+        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
+        try {
+            URL postUrl = new URL("https://www.google.com/calendar/feeds/"+googleSettings.login+"/owncalendars/full")
+            return service.insert(postUrl, calendar);
+        } catch (Exception e) {
+            e.printStackTrace()
+        }
+        return calendar;
+    }
+
+
+    def deleteCalendar(CalendarService service, String calendarName) {
+        CalendarEntry calendar = getCalendar(service, calendarName)
+        try {
+            calendar.delete()
+        } catch (Exception e) {
+            System.out.println("Unable to delete calendar : " + calendar.getTitle().getPlainText())
+        }
+    }
+
+    def getNewEvent(eventName, comment) {
+        CalendarEventEntry newEvent = new CalendarEventEntry()
+        newEvent.setTitle(new PlainTextConstruct(eventName))
+        if(comment)
+            newEvent.setContent(new PlainTextConstruct(comment))
+        return newEvent
+    }
+
+    def sendEvent(googleService, event){
+        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
+        URL postUrl = new URL("https://www.google.com/calendar/feeds/"+googleSettings.login+"/private/full")
+        return googleService.insert(postUrl, event)
+    }
 
 }
