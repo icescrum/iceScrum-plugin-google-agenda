@@ -147,13 +147,15 @@ class GoogleAgendaController {
 
     def createScrumMeetingEvent(googleService,startDate, endDate, startHour){
 
+        boolean longsprint = (endDate - startDate > SMALL_SPRINT_DURATION)
         // WeekEnd exclusion
         switch(startDate.getAt(Calendar.DAY_OF_WEEK)){
             case 1 : // SU
                 startDate += 1
                 break
             case 6 : // FR
-                startDate += 2
+                if(longsprint)
+                  startDate += 2
                 break
             case 7 : // SA
                 startDate += 2
@@ -161,7 +163,7 @@ class GoogleAgendaController {
         }
 
         // Add "margins" to the sprint meetings if it lates more than 7 days
-        if(endDate - startDate > SMALL_SPRINT_DURATION)
+        if(longsprint)
             startDate ++
         else
             endDate ++
