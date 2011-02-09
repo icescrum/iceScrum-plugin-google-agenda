@@ -7,18 +7,20 @@ import com.google.gdata.data.calendar.CalendarEventEntry
 
 class GoogleCalendarService {
 
+    def CALENDAR_NAME = "iceScrum"
+
     def getConnection(login, password) {
         CalendarService googleService = new CalendarService("iceScrum")
         try {
             googleService.setUserCredentials(login, password);
         }
         catch (AuthenticationException e) {
-            return false
+            return null
         }
         return googleService
     }
 
-    def createCalendar(CalendarService service, login, password, calendarName) {
+    def createCalendar(CalendarService service, login, calendarName) {
         CalendarEntry calendar = getCalendar(service, login, calendarName)
         if(!calendar) {
             calendar = new CalendarEntry()
@@ -54,13 +56,15 @@ class GoogleCalendarService {
         return null;
     }
 
-    def deleteCalendar(CalendarService service, login, calendarName) {
+    def deleteCalendar(CalendarService service, String login, String calendarName) {
         CalendarEntry calendar = getCalendar(service, login, calendarName)
         try {
             calendar.delete()
+            System.out.println("Calendar deleted")
         } catch (Exception e) {
-            System.out.println("Unable to delete calendar : " + calendar.getTitle().getPlainText())
+            System.out.println("Unable to delete calendar")
         }
+
     }
 
     def getPostUrl(login, isCalendar) {
@@ -78,7 +82,15 @@ class GoogleCalendarService {
     }
 
     def sendEvent(CalendarService service, login, event){
-        return service.insert(getPostUrl(login, false), event)
+        CalendarEntry cal = getCalendar(service, login, CALENDAR_NAME)
+        if(cal)
+            return service.insert(new URL(getCalendarURL(cal, login)), event)
+        return null
     }
+
+
+    def getCalendarURL(CalendarEntry cal, login) {
+		return cal.getId().replace("%40", "@").replace(login+"/calendars/", "")+"/private/full"
+	}
 
 }

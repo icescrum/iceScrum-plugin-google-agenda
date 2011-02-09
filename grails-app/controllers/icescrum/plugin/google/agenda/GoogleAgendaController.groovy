@@ -2,7 +2,9 @@ package icescrum.plugin.google.agenda
 
 import com.google.gdata.client.calendar.CalendarService
 import com.google.gdata.data.DateTime
+import com.google.gdata.data.PlainTextConstruct
 import com.google.gdata.data.calendar.CalendarEventEntry
+import com.google.gdata.data.calendar.CalendarEntry
 import com.google.gdata.data.extensions.When
 import com.google.gdata.data.extensions.Recurrence
 
@@ -26,9 +28,10 @@ class GoogleAgendaController {
     static window =  [title:'is.googleAgenda.ui',help:'is.googleAgenda.ui.help',toolbar:false]
 
     def SMALL_SPRINT_DURATION = 7
-    def CALENDAR_NAME = "iceScrum"
+
 
     def googleCalendarService
+    def CALENDAR_NAME = "iceScrum"
 
     def index = {
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
@@ -55,7 +58,7 @@ class GoogleAgendaController {
         CalendarService googleService = googleCalendarService.getConnection(params.googleLogin, params.googlePassword);
         if(googleService) {
             googleSettings.save()
-            googleCalendarService.createCalendar(googleService, googleSettings.login, googleSettings.password, CALENDAR_NAME)
+            googleCalendarService.createCalendar(googleService, googleSettings.login, CALENDAR_NAME)
             redirect(action:'index',params:[product:params.product])
         }
         else
@@ -80,8 +83,13 @@ class GoogleAgendaController {
     def updateCalendar = {
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
         CalendarService googleService = googleCalendarService.getConnection(googleSettings.login, googleSettings.password)
+
+        googleCalendarService.deleteCalendar(googleService, googleSettings.login, CALENDAR_NAME)
+        googleCalendarService.createCalendar(googleService, googleSettings.login, CALENDAR_NAME)
+
         addScrumEvents(googleService, googleSettings)
         render(status:200,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.success.updateCalendar')]] as JSON)
+
     }
 
     def addScrumEvents (googleService, googleSettings) {
@@ -207,4 +215,7 @@ class GoogleAgendaController {
         }
         return computedDate
     }
+
+
+
 }
