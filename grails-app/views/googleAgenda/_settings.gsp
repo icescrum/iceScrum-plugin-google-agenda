@@ -24,21 +24,21 @@
               <div class="panel-box-content">
                   <p>${message(code:'is.googleAgenda.ui.settings')}</p>
                   <form name="googleForm" method="post" onsubmit="$('input[name=googleButton]').click();return false;">
-                          <is:checkbox  name="displayDailyMeetings"
-                                        value="${displayDailyMeetings}"
-                                        label="${message(code: 'is.googleAgenda.ui.displayDailyMeetings')}" /><br />
-                          <is:checkbox  name="displaySprintReview"
-                                        value="${displaySprintReview}"
-                                        label="${message(code: 'is.googleAgenda.ui.displaySprintReview')}" /><br />
-                          <is:checkbox  name="displaySprintRetrospective"
-                                        value="${displaySprintRetrospective}"
-                                        label="${message(code: 'is.googleAgenda.ui.displaySprintRetrospective')}" /><br />
                           <is:checkbox  name="displayReleasePlanning"
                                         value="${displayReleasePlanning}"
-                                        label="${message(code: 'is.googleAgenda.ui.displayReleasePlanning')}" /><br />
+                                        label="${message(code: 'is.googleAgenda.ui.releasePlanning')+' ('+releasePlanningHour+')'}" /><br/>
                           <is:checkbox  name="displaySprintPlanning"
                                         value="${displaySprintPlanning}"
-                                        label="${message(code: 'is.googleAgenda.ui.displaySprintPlanning')}" /><br /><br />
+                                        label="${message(code: 'is.googleAgenda.ui.sprintPlanning')+' ('+sprintPlanningHour+')'}" /><br/>
+                          <is:checkbox  name="displayDailyMeetings"
+                                        value="${displayDailyMeetings}"
+                                        label="${message(code: 'is.googleAgenda.ui.dailyMeetings')+' ('+dailyMeetingsHour+')'}" /><br/>
+                          <is:checkbox  name="displaySprintReview"
+                                        value="${displaySprintReview}"
+                                        label="${message(code: 'is.googleAgenda.ui.sprintReview')+' ('+sprintReviewHour+')'}" /><br/>
+                          <is:checkbox  name="displaySprintRetrospective"
+                                        value="${displaySprintRetrospective}"
+                                        label="${message(code: 'is.googleAgenda.ui.sprintRetrospective')+' ('+sprintRetrospectiveHour+')'}" /><br/><br/>
                           <is:button
                            remote="true"
                            history="false"

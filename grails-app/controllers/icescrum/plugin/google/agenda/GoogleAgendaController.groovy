@@ -34,7 +34,9 @@ class GoogleAgendaController {
     def CALENDAR_NAME = "iceScrum"
 
     def index = {
-        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
+        Product currentProduct = Product.get(params.product)
+        ProductPreferences preferences = currentProduct.preferences
+        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(currentProduct)
         if (googleSettings) {
             render template:'settings',
                   plugin:pluginName,
@@ -44,7 +46,12 @@ class GoogleAgendaController {
                          displaySprintReview:googleSettings.displaySprintReview,
                          displaySprintRetrospective:googleSettings.displaySprintRetrospective,
                          displayReleasePlanning:googleSettings.displayReleasePlanning,
-                         displaySprintPlanning:googleSettings.displaySprintPlanning]
+                         displaySprintPlanning:googleSettings.displaySprintPlanning,
+                         dailyMeetingsHour:preferences.dailyMeetingHour,
+                         sprintReviewHour:preferences.sprintReviewHour,
+                         sprintRetrospectiveHour:preferences.sprintRetrospectiveHour,
+                         releasePlanningHour:preferences.releasePlanningHour,
+                         sprintPlanningHour:preferences.sprintPlanningHour]
         }
         else {
             render template:'setAccount',

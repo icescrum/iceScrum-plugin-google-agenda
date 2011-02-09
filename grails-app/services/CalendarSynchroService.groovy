@@ -23,10 +23,10 @@ class CalendarSynchroService implements ApplicationListener<IceScrumEvent> {
     }
 
     private void manageReleaseEvent (Release release, User author, String type) {
-        println "Received release event: "+ release.id + " author: " + author.username
+        println "Received release event: "+ release.id
     }
 
     private void manageSprintEvent (Sprint sprint, User author, String type) {
-        println "Received sprint event: " + sprint.id + " author: " + author.username
+        println "Received sprint event: " + sprint.id
     }
 }
