@@ -14,6 +14,7 @@ import org.icescrum.core.domain.Sprint
 import org.icescrum.core.domain.preferences.ProductPreferences
 
 import org.icescrum.web.support.MenuBarSupport
+import java.sql.Timestamp
 
 @Secured('scrumMaster()')
 class GoogleAgendaController {
@@ -116,6 +117,32 @@ class GoogleAgendaController {
                                     startHour,
                                     googleSettings.login)
         }
+        if(googleSettings.displaySprintPlanning){
+            def hour = preferences.sprintPlanningHour.split(':')
+            def sprintPlanning = getMeetingTimeInterval(startDate, hour, 1)
+            createSingleEvent(googleService,
+                                 "Sprint Planning",
+                                  "no comment",
+                                  iSDateToGoogleDate(sprintPlanning.get(0),false,false),
+                                  iSDateToGoogleDate(sprintPlanning.get(1),false,false),
+                                  googleSettings.login)
+        }
+    }
+
+    def getMeetingTimeInterval(startDate, hour, duration){
+       // Define start date and end date of meeting
+       Date start = new Date()
+       start.setTime(startDate.getTime())
+       Date end = new Date()
+       end.setTime(start.getTime())
+       start.setHours(Integer.parseInt(hour[0]))
+       start.setMinutes(Integer.parseInt(hour[1]))
+       end.setHours(Integer.parseInt(hour[0]) + duration)
+       end.setMinutes(Integer.parseInt(hour[1]))
+       List<Timestamp> meetingTimes = new ArrayList<Timestamp>();
+       meetingTimes.add(new Timestamp(start.getTime()))
+       meetingTimes.add(new Timestamp(end.getTime()))
+       return meetingTimes;
     }
 
     def iSDateToGoogleDate (Date date, isAllDay, isEndDate) {
