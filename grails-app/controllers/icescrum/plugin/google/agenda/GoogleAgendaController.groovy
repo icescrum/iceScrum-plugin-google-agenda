@@ -134,7 +134,7 @@ class GoogleAgendaController {
         }
         if(googleSettings.displaySprintPlanning){
             def hour = preferences.sprintPlanningHour.split(':')
-            def sprintPlanning = getMeetingTimeInterval(startDate, hour, 1)
+            def sprintPlanning = getMeetingTimeInterval(startDate, hour, 1, false)
             createSingleEvent(googleService,
                                  "Sprint Planning",
                                   "no comment",
@@ -142,9 +142,29 @@ class GoogleAgendaController {
                                   iSDateToGoogleDate(sprintPlanning.get(1),false,false),
                                   googleSettings.login)
         }
+        if(googleSettings.displaySprintReview){
+          def hour = preferences.sprintReviewHour.split(':')
+          def sprintReview = getMeetingTimeInterval(endDate, hour, 2, true)
+          createSingleEvent(googleService,
+                                 "Sprint Review",
+                                  "no comment",
+                                  iSDateToGoogleDate(sprintReview.get(0),false,false),
+                                  iSDateToGoogleDate(sprintReview.get(1),false,false),
+                                  googleSettings.login)
+        }
+        if(googleSettings.displaySprintRetrospective){
+          def hour = preferences.sprintRetrospectiveHour.split(':')
+          def sprintRetrospective = getMeetingTimeInterval(endDate, hour, 1, true)
+          createSingleEvent(googleService,
+                                 "Sprint Retrospective",
+                                  "no comment",
+                                  iSDateToGoogleDate(sprintRetrospective.get(0),false,false),
+                                  iSDateToGoogleDate(sprintRetrospective.get(1),false,false),
+                                  googleSettings.login)
+        }
     }
 
-    def getMeetingTimeInterval(startDate, hour, duration){
+    def getMeetingTimeInterval(startDate, hour, duration, endOfSprint){
        // Define start date and end date of meeting
        Date start = new Date()
        start.setTime(startDate.getTime())
@@ -154,6 +174,31 @@ class GoogleAgendaController {
        start.setMinutes(Integer.parseInt(hour[1]))
        end.setHours(Integer.parseInt(hour[0]) + duration)
        end.setMinutes(Integer.parseInt(hour[1]))
+
+      if(endOfSprint){
+        switch(start.getAt(Calendar.DAY_OF_WEEK)){
+        case 1 : // SU
+            start -= 2
+            end -= 2
+            break
+        case 7 : // SA
+            start -= 1
+            end -= 1
+            break
+        }
+      } else {
+        switch(start.getAt(Calendar.DAY_OF_WEEK)){
+        case 1 : // SU
+            start += 1
+            end += 1
+            break
+        case 7 : // SA
+            start += 2
+            end += 2
+            break
+        }
+      }
+
        List<Timestamp> meetingTimes = new ArrayList<Timestamp>();
        meetingTimes.add(new Timestamp(start.getTime()))
        meetingTimes.add(new Timestamp(end.getTime()))
