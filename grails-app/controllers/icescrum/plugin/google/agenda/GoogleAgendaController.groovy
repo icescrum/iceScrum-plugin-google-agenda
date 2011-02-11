@@ -29,7 +29,6 @@ class GoogleAgendaController {
 
     def SMALL_SPRINT_DURATION = 7
 
-
     def googleCalendarService
     def CALENDAR_NAME = "iceScrum"
 
@@ -47,7 +46,7 @@ class GoogleAgendaController {
                          displaySprintRetrospective:googleSettings.displaySprintRetrospective,
                          displayReleasePlanning:googleSettings.displayReleasePlanning,
                          displaySprintPlanning:googleSettings.displaySprintPlanning,
-                         dailyMeetingsHour:preferences.dailyMeetingHour,
+                         dailyMeetingHour:preferences.dailyMeetingHour,
                          sprintReviewHour:preferences.sprintReviewHour,
                          sprintRetrospectiveHour:preferences.sprintRetrospectiveHour,
                          releasePlanningHour:preferences.releasePlanningHour,
@@ -85,18 +84,14 @@ class GoogleAgendaController {
             render(status:400,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.error.saveSettings')]] as JSON)
     }
 
-    // Vider l'agenda !!
     // Gestion des erreurs !!!
     def updateCalendar = {
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
         CalendarService googleService = googleCalendarService.getConnection(googleSettings.login, googleSettings.password)
-
         googleCalendarService.deleteCalendar(googleService, googleSettings.login, CALENDAR_NAME)
         googleCalendarService.createCalendar(googleService, googleSettings.login, CALENDAR_NAME)
-
         addScrumEvents(googleService, googleSettings)
         render(status:200,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.success.updateCalendar')]] as JSON)
-
     }
 
     def addScrumEvents (googleService, googleSettings) {
@@ -119,14 +114,15 @@ class GoogleAgendaController {
 
     def addSprintMeetings(googleService, startDate, endDate, googleSettings) {
         boolean longSprint = (endDate - startDate > SMALL_SPRINT_DURATION)
-        Product currentProduct = Product.get(params.product)
-        ProductPreferences preferences = currentProduct.preferences
+        ProductPreferences preferences = Product.get(params.product).preferences
         if(googleSettings.displayDailyMeetings){
             def hour = preferences.dailyMeetingHour.split(':')
             Date startHour = new Date();
             startHour.hours = Integer.parseInt(hour[0]);
             startHour.minutes = Integer.parseInt(hour[1]);
             createScrumMeetingEvent(googleService,
+                                    message(code: 'is.googleAgenda.ui.dailyMeeting'),
+                                    null,
                                     getDailyScrumMeetingStartDate(startDate, longSprint),
                                     getDailyScrumMeetingEndDate(endDate, longSprint),
                                     startHour,
@@ -136,28 +132,28 @@ class GoogleAgendaController {
             def hour = preferences.sprintPlanningHour.split(':')
             def sprintPlanning = getMeetingTimeInterval(startDate, hour, 1, false)
             createSingleEvent(googleService,
-                                 "Sprint Planning",
-                                  "no comment",
+                                  message(code: 'is.googleAgenda.ui.sprintPlanning'),
+                                  null,
                                   iSDateToGoogleDate(sprintPlanning.get(0),false,false),
                                   iSDateToGoogleDate(sprintPlanning.get(1),false,false),
                                   googleSettings.login)
         }
         if(googleSettings.displaySprintReview){
-          def hour = preferences.sprintReviewHour.split(':')
-          def sprintReview = getMeetingTimeInterval(endDate, hour, 2, true)
-          createSingleEvent(googleService,
-                                 "Sprint Review",
-                                  "no comment",
+            def hour = preferences.sprintReviewHour.split(':')
+            def sprintReview = getMeetingTimeInterval(endDate, hour, 2, true)
+            createSingleEvent(googleService,
+                                  message(code: 'is.googleAgenda.ui.sprintReview'),
+                                  null,
                                   iSDateToGoogleDate(sprintReview.get(0),false,false),
                                   iSDateToGoogleDate(sprintReview.get(1),false,false),
                                   googleSettings.login)
         }
         if(googleSettings.displaySprintRetrospective){
-          def hour = preferences.sprintRetrospectiveHour.split(':')
-          def sprintRetrospective = getMeetingTimeInterval(endDate, hour, 1, true)
-          createSingleEvent(googleService,
-                                 "Sprint Retrospective",
-                                  "no comment",
+            def hour = preferences.sprintRetrospectiveHour.split(':')
+            def sprintRetrospective = getMeetingTimeInterval(endDate, hour, 1, true)
+            createSingleEvent(googleService,
+                                  message(code: 'is.googleAgenda.ui.sprintRetrospective'),
+                                  null,
                                   iSDateToGoogleDate(sprintRetrospective.get(0),false,false),
                                   iSDateToGoogleDate(sprintRetrospective.get(1),false,false),
                                   googleSettings.login)
@@ -165,44 +161,45 @@ class GoogleAgendaController {
     }
 
     def getMeetingTimeInterval(startDate, hour, duration, endOfSprint){
-       // Define start date and end date of meeting
-       Date start = new Date()
-       start.setTime(startDate.getTime())
-       Date end = new Date()
-       end.setTime(start.getTime())
-       start.setHours(Integer.parseInt(hour[0]))
-       start.setMinutes(Integer.parseInt(hour[1]))
-       end.setHours(Integer.parseInt(hour[0]) + duration)
-       end.setMinutes(Integer.parseInt(hour[1]))
+        // Define start date and end date of meeting
+        Date start = new Date()
+        start.setTime(startDate.getTime())
+        Date end = new Date()
+        end.setTime(start.getTime())
+        start.setHours(Integer.parseInt(hour[0]))
+        start.setMinutes(Integer.parseInt(hour[1]))
+        end.setHours(Integer.parseInt(hour[0]) + duration)
+        end.setMinutes(Integer.parseInt(hour[1]))
 
-      if(endOfSprint){
-        switch(start.getAt(Calendar.DAY_OF_WEEK)){
-        case 1 : // SU
-            start -= 2
-            end -= 2
-            break
-        case 7 : // SA
-            start -= 1
-            end -= 1
-            break
+        if(endOfSprint){
+            switch(start.getAt(Calendar.DAY_OF_WEEK)){
+                case 1 : // SU
+                    start -= 2
+                    end -= 2
+                    break
+                case 7 : // SA
+                    start -= 1
+                    end -= 1
+                    break
+            }
         }
-      } else {
-        switch(start.getAt(Calendar.DAY_OF_WEEK)){
-        case 1 : // SU
-            start += 1
-            end += 1
-            break
-        case 7 : // SA
-            start += 2
-            end += 2
-            break
+        else {
+            switch(start.getAt(Calendar.DAY_OF_WEEK)){
+                case 1 : // SU
+                    start += 1
+                    end += 1
+                    break
+                case 7 : // SA
+                    start += 2
+                    end += 2
+                    break
+            }
         }
-      }
 
-       List<Timestamp> meetingTimes = new ArrayList<Timestamp>();
-       meetingTimes.add(new Timestamp(start.getTime()))
-       meetingTimes.add(new Timestamp(end.getTime()))
-       return meetingTimes;
+        List<Timestamp> meetingTimes = new ArrayList<Timestamp>();
+        meetingTimes.add(new Timestamp(start.getTime()))
+        meetingTimes.add(new Timestamp(end.getTime()))
+        return meetingTimes;
     }
 
     def iSDateToGoogleDate (Date date, isAllDay, isEndDate) {
@@ -226,7 +223,7 @@ class GoogleAgendaController {
         return googleCalendarService.sendEvent(googleService, login, newEvent)
     }
 
-    def createScrumMeetingEvent(googleService, startDate, endDate, startHour, login){
+    def createScrumMeetingEvent(googleService, eventName, comment, startDate, endDate, startHour, login){
         def recurData = "DTSTART;VALUE=PERIOD:" +
                         startDate.format("yyyyMMdd'T'") +
                         startHour.format("HHmmss") +
@@ -235,7 +232,7 @@ class GoogleAgendaController {
                         ";BYDAY=MO,TU,WE,TH,FR\r\n"
         Recurrence recur = new Recurrence()
         recur.setValue(recurData)
-        CalendarEventEntry newEvent = googleCalendarService.getNewEvent("Scrum Meeting", null)
+        CalendarEventEntry newEvent = googleCalendarService.getNewEvent(eventName, comment)
         newEvent.setRecurrence(recur)
         return googleCalendarService.sendEvent(googleService, login, newEvent)
     }
@@ -267,7 +264,5 @@ class GoogleAgendaController {
         }
         return computedDate
     }
-
-
 
 }

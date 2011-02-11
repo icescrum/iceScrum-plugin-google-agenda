@@ -32,7 +32,7 @@
                                         label="${message(code: 'is.googleAgenda.ui.sprintPlanning')+' ('+sprintPlanningHour+')'}" /><br/>
                           <is:checkbox  name="displayDailyMeetings"
                                         value="${displayDailyMeetings}"
-                                        label="${message(code: 'is.googleAgenda.ui.dailyMeetings')+' ('+dailyMeetingsHour+')'}" /><br/>
+                                        label="${message(code: 'is.googleAgenda.ui.dailyMeeting')+' ('+dailyMeetingHour+')'}" /><br/>
                           <is:checkbox  name="displaySprintReview"
                                         value="${displaySprintReview}"
                                         label="${message(code: 'is.googleAgenda.ui.sprintReview')+' ('+sprintReviewHour+')'}" /><br/>
