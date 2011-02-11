@@ -37,6 +37,8 @@ class GoogleAgendaController {
         ProductPreferences preferences = currentProduct.preferences
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(currentProduct)
         if (googleSettings) {
+            CalendarService googleService = googleCalendarService.getConnection(googleSettings.login, googleSettings.password)
+            def googleLink = googleCalendarService.getCalendarPublicURL(googleService, googleSettings.login, CALENDAR_NAME)
             render template:'settings',
                   plugin:pluginName,
                   model:[id:id,
@@ -50,7 +52,8 @@ class GoogleAgendaController {
                          sprintReviewHour:preferences.sprintReviewHour,
                          sprintRetrospectiveHour:preferences.sprintRetrospectiveHour,
                          releasePlanningHour:preferences.releasePlanningHour,
-                         sprintPlanningHour:preferences.sprintPlanningHour]
+                         sprintPlanningHour:preferences.sprintPlanningHour,
+                         googleLink:googleLink]
         }
         else {
             render template:'setAccount',

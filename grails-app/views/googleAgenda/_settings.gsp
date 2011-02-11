@@ -17,6 +17,18 @@
               <br/>
             </div>
         </div>
+        <div class="panel-box">
+          <h3 class="panel-box-title">${message(code: 'is.googleAgenda.ui.linkToCalendar')}</h3>
+            <div class="panel-box-content">
+
+              <p>
+                <h2 style="text-align:center;">
+                    <is:link id="googleLink" name="googleLink" target="_blank" url="${googleLink}">Google Link</is:link>
+                </h2>
+              </p>
+              <br/>
+            </div>
+        </div>
       </div>
       <div class="col2">
           <div class="panel-box">
