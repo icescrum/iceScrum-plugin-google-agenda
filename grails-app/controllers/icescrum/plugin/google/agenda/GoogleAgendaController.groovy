@@ -87,11 +87,9 @@ class GoogleAgendaController {
     }
 
     def updateCalendar = {
-        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
-        CalendarService googleService = googleCalendarService.getConnection(googleSettings.login, googleSettings.password)
-        googleCalendarService.deleteCalendar(googleService, googleSettings.login, CALENDAR_NAME)
-        googleCalendarService.createCalendar(googleService, googleSettings.login, CALENDAR_NAME)
-        calendarEventService.addScrumEvents(Product.get(params.product), googleService, googleSettings, User.get(springSecurityService.principal.id).preferences.language)
+        Product currentProduct = Product.get(params.product)
+        def language = User.get(springSecurityService.principal.id).preferences.language
+        calendarEventService.updateWholeCalendar(currentProduct, language)
         render(status:200,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.success.updateCalendar')]] as JSON)
     }
 

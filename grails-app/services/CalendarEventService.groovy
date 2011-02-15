@@ -2,10 +2,12 @@ import com.google.gdata.data.DateTime
 import com.google.gdata.data.calendar.CalendarEventEntry
 import com.google.gdata.data.extensions.When
 import com.google.gdata.data.extensions.Recurrence
+import com.google.gdata.client.calendar.CalendarService
 
 import org.icescrum.core.domain.Product
 import org.icescrum.core.domain.Sprint
 import org.icescrum.core.domain.preferences.ProductPreferences
+import icescrum.plugin.google.agenda.GoogleCalendarSettings
 
 import java.sql.Timestamp
 
@@ -16,26 +18,43 @@ class CalendarEventService {
 
     def SMALL_SPRINT_DURATION = 7
 
-    def addScrumEvents (Product product, googleService, googleSettings, language) {
-        int sprint = 1
-        product.releases?.each { r->
-            r.sprints.asList().each { s->
-                createSingleEvent(googleService,
-                                  r.name + "-Sprint#" + sprint++,
-                                  "no comment",
-                                  iSDateToGoogleDate(s.startDate,true,false),
-                                  iSDateToGoogleDate(s.endDate,true,true),
-                                  googleSettings.login)
-                if(s.state != Sprint.STATE_WAIT)
-                    addSprintMeetings(product, googleService, s.startDate, s.endDate, googleSettings, language)
+    def CALENDAR_NAME = "iceScrum"
+
+    def updateWholeCalendar (Product product, language) {
+
+        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(product)
+        CalendarService googleService = googleCalendarService.getConnection(googleSettings.login, googleSettings.password)
+        googleCalendarService.deleteCalendar(googleService, googleSettings.login, CALENDAR_NAME)
+        googleCalendarService.createCalendar(googleService, googleSettings.login, CALENDAR_NAME)
+
+        int sprintNumber = 1
+        product.releases?.each { release->
+            release.sprints.asList().each { sprint->
+                addSprint(product, sprint, sprintNumber, release.name)
+                if(sprint.state != Sprint.STATE_WAIT)
+                    addSprintMeetings(product, sprint, language)
+                sprintNumber ++
             }
-            sprint = 1
+            sprintNumber = 1
         }
     }
 
-    def addSprintMeetings(Product product, googleService, startDate, endDate, googleSettings, language) {
-        boolean longSprint = (endDate - startDate > SMALL_SPRINT_DURATION)
+    def addSprint(Product product, Sprint sprint, sprintNumber, releaseName) {
+        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(product)
+        CalendarService googleService = googleCalendarService.getConnection(googleSettings.login, googleSettings.password)
+        createSingleEvent(googleService,
+                          releaseName + "-Sprint#" + sprintNumber,
+                          null,
+                          iSDateToGoogleDate(sprint.startDate,true,false),
+                          iSDateToGoogleDate(sprint.endDate,true,true),
+                          googleSettings.login)
+    }
+
+    def addSprintMeetings(Product product, sprint, language) {
+        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(product)
+        CalendarService googleService = googleCalendarService.getConnection(googleSettings.login, googleSettings.password)
         ProductPreferences preferences = product.preferences
+        boolean longSprint = (sprint.endDate - sprint.startDate > SMALL_SPRINT_DURATION)
         Locale locale = new Locale(language)
         if(googleSettings.displayDailyMeetings){
             def hour = preferences.dailyMeetingHour.split(':')
@@ -45,14 +64,14 @@ class CalendarEventService {
             createScrumMeetingEvent(googleService,
                                     messageSource.resolveCode('is.googleAgenda.ui.dailyMeeting',locale).format({} as Object[]),
                                     null,
-                                    getDailyScrumMeetingStartDate(startDate, longSprint),
-                                    getDailyScrumMeetingEndDate(endDate, longSprint),
+                                    getDailyScrumMeetingStartDate(sprint.startDate, longSprint),
+                                    getDailyScrumMeetingEndDate(sprint.endDate, longSprint),
                                     startHour,
                                     googleSettings.login)
         }
         if(googleSettings.displaySprintPlanning){
             def hour = preferences.sprintPlanningHour.split(':')
-            def sprintPlanning = getMeetingTimeInterval(startDate, hour, 1, false)
+            def sprintPlanning = getMeetingTimeInterval(sprint.startDate, hour, 1, false)
             createSingleEvent(googleService,
                                   messageSource.resolveCode('is.googleAgenda.ui.sprintPlanning',locale).format({} as Object[]),
                                   null,
@@ -62,7 +81,7 @@ class CalendarEventService {
         }
         if(googleSettings.displaySprintReview){
             def hour = preferences.sprintReviewHour.split(':')
-            def sprintReview = getMeetingTimeInterval(endDate, hour, 2, true)
+            def sprintReview = getMeetingTimeInterval(sprint.endDate, hour, 2, true)
             createSingleEvent(googleService,
                                   messageSource.resolveCode('is.googleAgenda.ui.sprintReview',locale).format({} as Object[]),
                                   null,
@@ -72,7 +91,7 @@ class CalendarEventService {
         }
         if(googleSettings.displaySprintRetrospective){
             def hour = preferences.sprintRetrospectiveHour.split(':')
-            def sprintRetrospective = getMeetingTimeInterval(endDate, hour, 1, true)
+            def sprintRetrospective = getMeetingTimeInterval(sprint.endDate, hour, 1, true)
             createSingleEvent(googleService,
                                   messageSource.resolveCode('is.googleAgenda.ui.sprintRetrospective',locale).format({} as Object[]),
                                   null,
