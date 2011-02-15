@@ -5,6 +5,9 @@
           <h3 class="panel-box-title">${message(code:'is.googleAgenda.ui.accountTitle')}</h3>
             <div class="panel-box-content">
               <p>${message(code:'is.googleAgenda.ui.account')} <b>${login}</b></p>
+              <p>${message(code: 'is.googleAgenda.ui.linkToCalendar')}
+                  <is:link id="googleLink" name="googleLink" target="_blank" url="${googleLink}">Google Link</is:link>
+              </p>
               <p>
                  <is:button
                   url="[controller:id, action:'updateCalendar', params:[product:params.product]]"
@@ -13,18 +16,6 @@
                   history="false"
                   onSuccess="jQuery.icescrum.renderNotice(data.notice.text,data.notice.type)"
                   value="${message(code: 'is.googleAgenda.ui.updateCalendar')}" />
-              </p>
-              <br/>
-            </div>
-        </div>
-        <div class="panel-box">
-          <h3 class="panel-box-title">${message(code: 'is.googleAgenda.ui.linkToCalendar')}</h3>
-            <div class="panel-box-content">
-
-              <p>
-                <h2 style="text-align:center;">
-                    <is:link id="googleLink" name="googleLink" target="_blank" url="${googleLink}">Google Link</is:link>
-                </h2>
               </p>
               <br/>
             </div>
