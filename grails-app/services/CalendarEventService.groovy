@@ -21,12 +21,10 @@ class CalendarEventService {
     def CALENDAR_NAME = "iceScrum"
 
     def updateWholeCalendar (Product product, language) {
-
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(product)
         CalendarService googleService = googleCalendarService.getConnection(googleSettings.login, googleSettings.password)
         googleCalendarService.deleteCalendar(googleService, googleSettings.login, CALENDAR_NAME)
         googleCalendarService.createCalendar(googleService, googleSettings.login, CALENDAR_NAME)
-
         int sprintNumber = 1
         product.releases?.each { release->
             release.sprints.asList().each { sprint->
