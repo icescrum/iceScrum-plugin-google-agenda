@@ -6,7 +6,7 @@
             <div class="panel-box-content">
               <p>${message(code:'is.googleAgenda.ui.account')} <b>${login}</b></p>
               <p>${message(code: 'is.googleAgenda.ui.linkToCalendar')}
-                  <is:link id="googleLink" name="googleLink" target="_blank" url="${googleLink}">Google Link</is:link>
+                  <is:link id="googleLink" name="googleLink" class="scrum-link" target="_blank" url="${googleLink}">Google Link</is:link>
               </p>
               <p>
                  <is:button
