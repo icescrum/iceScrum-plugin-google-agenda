@@ -29,35 +29,38 @@ class CalendarSynchroService implements ApplicationListener<IceScrumEvent> {
 
     private void manageReleaseEvent (Release release, User author, String type) {
         println "Received release event: "+ release.id + "type:" + type
-
-        Product product = release.parentProduct
-        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(product)
-        if (googleSettings)
-            if (type == IceScrumEvent.EVENT_UPDATED) {
-                calendarEventService.updateWholeCalendar(product, author.preferences.language)
-                println "Update calendar after release update"
+        if (type != IceScrumEvent.EVENT_DELETED) {
+            Product product = release.parentProduct
+            GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(product)
+            if (googleSettings) {
+                if (type == IceScrumEvent.EVENT_UPDATED) {
+                    calendarEventService.updateWholeCalendar(product, author.preferences.language)
+                    println "Update calendar after release update"
+                }
             }
+        }
     }
 
     private void manageSprintEvent (Sprint sprint, User author, String type) {
         println "Received sprint event: " + sprint.id + "type:" + type
-
-        Release release = sprint.parentRelease
-        Product product = release.parentProduct
-        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(product)
-        if (googleSettings) {
-            if (type == IceScrumEvent.EVENT_UPDATED) {
-                calendarEventService.updateWholeCalendar(product, author.preferences.language)
-                println "Update calendar after sprint update"
-            }
-            else if (type == IceScrumEvent.EVENT_CREATED) {
-                // Chercher dynamiquement le bon numero de sprint
-                calendarEventService.addSprint(product, sprint, 28, release.name)
-                println "Add sprint after sprint creation"
-            }
-            else if(type == IceScrumSprintEvent.EVENT_ACTIVATED) {
-                calendarEventService.addSprintMeetings(product, sprint, author.preferences.language)
-                println "Add meetings after sprint activation"
+        if (type != IceScrumEvent.EVENT_DELETED) {
+            Release release = sprint.parentRelease
+            Product product = release.parentProduct
+            GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(product)
+            if (googleSettings) {
+                if (type == IceScrumEvent.EVENT_UPDATED) {
+                    calendarEventService.updateWholeCalendar(product, author.preferences.language)
+                    println "Update calendar after sprint update"
+                }
+                else if (type == IceScrumEvent.EVENT_CREATED) {
+                    // Chercher dynamiquement le bon numero de sprint
+                    calendarEventService.addSprint(product, sprint, 28, release.name)
+                    println "Add sprint after sprint creation"
+                }
+                else if(type == IceScrumSprintEvent.EVENT_ACTIVATED) {
+                    calendarEventService.addSprintMeetings(product, sprint, author.preferences.language)
+                    println "Add meetings after sprint activation"
+                }
             }
         }
     }
