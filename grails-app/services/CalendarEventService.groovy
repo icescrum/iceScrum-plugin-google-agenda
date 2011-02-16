@@ -69,8 +69,9 @@ class CalendarEventService {
                                     googleSettings.login)
         }
         if(googleSettings.displaySprintPlanning){
+            def duration = getSprintWeekDuration(sprint.startDate, sprint.endDate)
             def hour = preferences.sprintPlanningHour.split(':')
-            def sprintPlanning = getMeetingTimeInterval(sprint.startDate, hour, 1, false)
+            def sprintPlanning = getMeetingTimeInterval(sprint.startDate, hour, duration, false)
             createSingleEvent(googleService,
                                   messageSource.resolveCode('is.googleAgenda.ui.sprintPlanning',locale).format({} as Object[]),
                                   null,
@@ -97,6 +98,25 @@ class CalendarEventService {
                                   iSDateToGoogleDate(sprintRetrospective.get(0),false,false),
                                   iSDateToGoogleDate(sprintRetrospective.get(1),false,false),
                                   googleSettings.login)
+        }
+        if(googleSettings.displayReleasePlanning){
+          def duration = getSprintWeekDuration(sprint.startDate, sprint.endDate) - 1
+          Date end = new Date()
+          end.setTime(sprint.endDate.getTime())
+          if(duration >= 2){
+            end = end - 2
+          }else {
+            end = end - duration
+          }
+          Timestamp endDate = new Timestamp(end.getTime())
+          def hour = preferences.releasePlanningHour.split(':')
+          def releasePlanning = getMeetingTimeInterval(endDate, hour, 1, true)
+          createSingleEvent(googleService,
+                              messageSource.resolveCode('is.googleAgenda.ui.releasePlanning',locale).format({} as Object[]),
+                              null,
+                              iSDateToGoogleDate(releasePlanning.get(0), false, false),
+                              iSDateToGoogleDate(releasePlanning.get(1), false, false),
+                              googleSettings.login)
         }
     }
 
@@ -190,6 +210,17 @@ class CalendarEventService {
         if(!longSprint)
             computedDate ++
         return computedDate
+    }
+
+    def getSprintWeekDuration(startDate, endDate){
+      Date start = new Date()
+      start.setTime(startDate.getTime())
+      Date end = new Date()
+      end.setTime(endDate.getTime())
+      def nbWeek = Math.floor((end - start) / 7)
+      if((end - start) % 7)
+        nbWeek++
+      return (int)nbWeek
     }
 
     def getFirstWorkingDay(date) {
