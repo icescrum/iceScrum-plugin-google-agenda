@@ -16,9 +16,7 @@ class CalendarEventService {
 
     def googleCalendarService
     def messageSource
-
     def SMALL_SPRINT_DURATION = 7
-
     def CALENDAR_NAME = "iceScrum"
 
     def updateWholeCalendar (Product product, language) {
@@ -28,7 +26,7 @@ class CalendarEventService {
         googleCalendarService.emptyCalendar(googleService, c, googleSettings.login)
         int sprintNumber = 1
         product.releases?.each { release->
-            release.sprints.asList().each { sprint->
+            release.sprints?.each { sprint->
                 addSprint(product, sprint, sprintNumber, release.name)
                 if(sprint.state != Sprint.STATE_WAIT)
                     addSprintMeetings(product, sprint, language)
