@@ -199,10 +199,8 @@ class CalendarEventService {
 
     def getDailyScrumMeetingStartDate(startDate, longSprint) {
         def computedDate = startDate
-        if(longSprint)
-            computedDate ++
         // Week-end exclusion because Google doesn't take the "byday" into account for the start date
-        return getFirstWorkingDay(computedDate)
+        return getFirstWorkingDay(computedDate, longSprint)
     }
 
     def getDailyScrumMeetingEndDate(endDate, longSprint) {
@@ -223,15 +221,28 @@ class CalendarEventService {
       return (int)nbWeek
     }
 
-    def getFirstWorkingDay(date) {
+    def getFirstWorkingDay(date, longSprint) {
         def computedDate = date;
         switch(date.getAt(Calendar.DAY_OF_WEEK)){
         case 1 : // SU
-            computedDate += 1
+            if(longSprint)
+              computedDate += 2
+            else
+              computedDate++
+            break
+        case 6 : // FR
+            if(longSprint)
+              computedDate += 3
             break
         case 7 : // SA
-            computedDate += 2
+            if(longSprint)
+              computedDate += 3
+            else
+              computedDate += 2
             break
+         default :
+            if(longSprint)
+              computedDate++
         }
         return computedDate
     }
