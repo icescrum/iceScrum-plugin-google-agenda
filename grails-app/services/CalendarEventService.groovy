@@ -8,6 +8,7 @@ import org.icescrum.core.domain.Product
 import org.icescrum.core.domain.Sprint
 import org.icescrum.core.domain.preferences.ProductPreferences
 import icescrum.plugin.google.agenda.GoogleCalendarSettings
+import com.google.gdata.data.calendar.CalendarEntry
 
 import java.sql.Timestamp
 
@@ -23,8 +24,8 @@ class CalendarEventService {
     def updateWholeCalendar (Product product, language) {
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(product)
         CalendarService googleService = googleCalendarService.getConnection(googleSettings.login, googleSettings.password)
-        googleCalendarService.deleteCalendar(googleService, googleSettings.login, CALENDAR_NAME)
-        googleCalendarService.createCalendar(googleService, googleSettings.login, CALENDAR_NAME)
+        CalendarEntry c = googleCalendarService.getCalendar(googleService, googleSettings.login, CALENDAR_NAME)
+        googleCalendarService.emptyCalendar(googleService, c, googleSettings.login)
         int sprintNumber = 1
         product.releases?.each { release->
             release.sprints.asList().each { sprint->

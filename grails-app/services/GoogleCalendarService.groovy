@@ -1,10 +1,10 @@
 import com.google.gdata.data.PlainTextConstruct
-import com.google.gdata.data.calendar.CalendarEntry;
+import com.google.gdata.data.calendar.CalendarEntry
 import com.google.gdata.util.AuthenticationException
-import com.google.gdata.data.calendar.CalendarFeed;
+import com.google.gdata.data.calendar.CalendarFeed
 import com.google.gdata.client.calendar.CalendarService
 import com.google.gdata.data.calendar.CalendarEventEntry
-
+import com.google.gdata.data.calendar.CalendarEventFeed
 
 
 import com.google.gdata.data.acl.AclEntry;
@@ -116,6 +116,20 @@ class GoogleCalendarService {
         catch (Exception e) {
 			e.printStackTrace()
 		}
+	}
+
+    def emptyCalendar(CalendarService service, CalendarEntry c, login) {
+		try {
+			URL feedUrl = new URL(getCalendarURL(c, login));
+			CalendarEventFeed myFeed = service.getFeed(feedUrl, CalendarEventFeed.class);
+			List<CalendarEventEntry> events = myFeed.getEntries();
+			for(int i = 0; i < events.size(); i++) {
+				events.get(i).delete();
+			}
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
 	}
 
 }
