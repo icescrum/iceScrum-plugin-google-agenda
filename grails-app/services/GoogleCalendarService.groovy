@@ -21,7 +21,7 @@ class GoogleCalendarService {
             googleService.setUserCredentials(login, password);
         }
         catch (AuthenticationException e) {
-            return null
+            throw new RuntimeException('is.googleAgenda.error.wrongCredentials')
         }
         return googleService
     }
@@ -50,13 +50,13 @@ class GoogleCalendarService {
     def getCalendar(CalendarService service, login, calendarName) {
         CalendarFeed resultFeed = null
         try {
-            resultFeed = service.getFeed(getPostUrl(login, true), CalendarFeed.class)
+            resultFeed = service?.getFeed(getPostUrl(login, true), CalendarFeed.class)
         }
         catch (Exception e) {
             e.printStackTrace()
         }
-        for(int i = 0; i < resultFeed.getEntries().size(); i++)
-            if(resultFeed.getEntries().get(i).getTitle().getPlainText().equals(calendarName))
+        for(int i = 0; i < resultFeed?.getEntries()?.size(); i++)
+            if(resultFeed.getEntries().get(i)?.getTitle()?.getPlainText()?.equals(calendarName))
                 return resultFeed.getEntries().get(i)
         return null;
     }
@@ -88,12 +88,12 @@ class GoogleCalendarService {
     def sendEvent(CalendarService service, login, event){
         CalendarEntry cal = getCalendar(service, login, CALENDAR_NAME)
         if(cal)
-            return service.insert(new URL(getCalendarURL(cal, login)), event)
+            return service?.insert(new URL(getCalendarURL(cal, login)), event)
         return null
     }
 
     def getCalendarURL(CalendarEntry c, login) {
-		return c.getId().replace("%40", "@").replace(login+"/calendars/", "")+"/private/full"
+		return c?.getId()?.replace("%40", "@")?.replace(login+"/calendars/", "")+"/private/full"
 	}
 
     def getCalendarPublicURL(service, login, calendarName) {

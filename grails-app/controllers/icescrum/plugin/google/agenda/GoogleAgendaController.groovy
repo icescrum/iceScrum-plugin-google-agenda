@@ -36,26 +36,32 @@ class GoogleAgendaController {
         ProductPreferences preferences = currentProduct.preferences
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(currentProduct)
         if (googleSettings) {
-            CalendarService googleService = googleCalendarService.getConnection(googleSettings.login, googleSettings.password)
-            def googleLink = googleCalendarService.getCalendarPublicURL(googleService, googleSettings.login, CALENDAR_NAME)
-            render template:'settings',
-                  plugin:pluginName,
-                  model:[id:id,
-                         login:googleSettings.login,
-                         displayDailyMeetings:googleSettings.displayDailyMeetings,
-                         displaySprintReview:googleSettings.displaySprintReview,
-                         displaySprintRetrospective:googleSettings.displaySprintRetrospective,
-                         displayReleasePlanning:googleSettings.displayReleasePlanning,
-                         displaySprintPlanning:googleSettings.displaySprintPlanning,
-                         dailyMeetingHour:preferences.dailyMeetingHour,
-                         sprintReviewHour:preferences.sprintReviewHour,
-                         sprintRetrospectiveHour:preferences.sprintRetrospectiveHour,
-                         releasePlanningHour:preferences.releasePlanningHour,
-                         sprintPlanningHour:preferences.sprintPlanningHour,
-                         googleLink:googleLink]
+            try {
+                CalendarService googleService = googleCalendarService.getConnection(googleSettings.login, googleSettings.password)
+                def googleLink = googleCalendarService.getCalendarPublicURL(googleService, googleSettings.login, CALENDAR_NAME)
+                render template:'window/settings',
+                      plugin:pluginName,
+                      model:[id:id,
+                             login:googleSettings.login,
+                             displayDailyMeetings:googleSettings.displayDailyMeetings,
+                             displaySprintReview:googleSettings.displaySprintReview,
+                             displaySprintRetrospective:googleSettings.displaySprintRetrospective,
+                             displayReleasePlanning:googleSettings.displayReleasePlanning,
+                             displaySprintPlanning:googleSettings.displaySprintPlanning,
+                             dailyMeetingHour:preferences.dailyMeetingHour,
+                             sprintReviewHour:preferences.sprintReviewHour,
+                             sprintRetrospectiveHour:preferences.sprintRetrospectiveHour,
+                             releasePlanningHour:preferences.releasePlanningHour,
+                             sprintPlanningHour:preferences.sprintPlanningHour,
+                             googleLink:googleLink]
+            }catch(RuntimeException e){
+                render template:'window/blank',
+                plugin:pluginName,
+                model:[id:id]
+            }
         }
         else {
-            render template:'setAccount',
+            render template:'window/setAccount',
                 plugin:pluginName,
                 model:[id:id]
         }
@@ -63,14 +69,16 @@ class GoogleAgendaController {
 
     def saveAccount = {
         GoogleCalendarSettings googleSettings = new GoogleCalendarSettings(login:params.googleLogin, password:params.googlePassword, product:Product.get(params.product))
-        CalendarService googleService = googleCalendarService.getConnection(params.googleLogin, params.googlePassword);
-        if(googleService) {
-            googleSettings.save()
-            googleCalendarService.createCalendar(googleService, googleSettings.login, CALENDAR_NAME)
-            redirect(action:'index',params:[product:params.product])
+        try {
+            CalendarService googleService = googleCalendarService.getConnection(params.googleLogin, params.googlePassword);
+            if(googleService) {
+                googleSettings.save()
+                googleCalendarService.createCalendar(googleService, googleSettings.login, CALENDAR_NAME)
+                redirect(action:'index',params:[product:params.product])
+            }
+        }catch(RuntimeException e){
+            render(status:400,contentType:'application/json', text: [notice: [text: message(code: e.getMessage())]] as JSON)
         }
-        else
-            render(status:400,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.error.wrongCredentials')]] as JSON)
     }
 
     def saveSettings = {
@@ -89,8 +97,11 @@ class GoogleAgendaController {
     def updateCalendar = {
         Product currentProduct = Product.get(params.product)
         def language = User.get(springSecurityService.principal.id).preferences.language
-        calendarEventService.updateWholeCalendar(currentProduct, language)
-        render(status:200,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.success.updateCalendar')]] as JSON)
+        try {
+            calendarEventService.updateWholeCalendar(currentProduct, language)
+            render(status:200,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.success.updateCalendar')]] as JSON)
+        }catch(RuntimeException e){
+            render(status:400,contentType:'application/json', text: [notice: [text: message(code: e.getMessage())]] as JSON)
+        }
     }
-
 }
