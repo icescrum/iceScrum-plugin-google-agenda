@@ -23,7 +23,7 @@ class CalendarSynchroService implements ApplicationListener<IceScrumEvent> {
             }
         }
         catch(Exception exception){
-            exception.printStackTrace()
+            if (log.debugEnabled) exception.printStackTrace()
         }
     }
 

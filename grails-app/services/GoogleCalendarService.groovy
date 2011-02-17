@@ -42,7 +42,7 @@ class GoogleCalendarService {
             return service.insert(getPostUrl(login, true), calendar);
         }
         catch (Exception e) {
-            e.printStackTrace()
+            if (log.debugEnabled) e.printStackTrace()
         }
         return calendar;
     }
@@ -53,7 +53,7 @@ class GoogleCalendarService {
             resultFeed = service?.getFeed(getPostUrl(login, true), CalendarFeed.class)
         }
         catch (Exception e) {
-            e.printStackTrace()
+            if (log.debugEnabled) e.printStackTrace()
         }
         for(int i = 0; i < resultFeed?.getEntries()?.size(); i++)
             if(resultFeed.getEntries().get(i)?.getTitle()?.getPlainText()?.equals(calendarName))
@@ -114,7 +114,7 @@ class GoogleCalendarService {
 			AclEntry insertedEntry = service.insert(aclUrl, entry)
 		}
         catch (Exception e) {
-			e.printStackTrace()
+			if (log.debugEnabled) e.printStackTrace()
 		}
 	}
 
@@ -127,6 +127,7 @@ class GoogleCalendarService {
 				events.get(i).delete();
 			}
 		} catch (Exception e) {
+            if (log.debugEnabled) e.printStackTrace()
 			return false;
 		}
 		return true;
