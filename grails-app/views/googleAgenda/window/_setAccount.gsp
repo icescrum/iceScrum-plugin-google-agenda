@@ -11,12 +11,16 @@
         </is:fieldInput>
         <is:buttonBar id="googleButtonBar">
           <is:button
+                    id="buttonSubmit"
                     remote="true"
                     history="false"
                     update="window-content-${id}"
-                    type="submit"
+                    type="submitToRemote"
                     url="[controller:id, action:'saveAccount', params:[product:params.product]]"
                     value="${message(code:'is.googleAgenda.ui.connectAccount')}" />
         </is:buttonBar>
+
     </is:fieldset>
+
 </form>
+<is:shortcut key="return" callback="\$('#buttonSubmit').click();"/>
