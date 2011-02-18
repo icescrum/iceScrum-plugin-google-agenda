@@ -6,7 +6,6 @@ import org.icescrum.core.domain.Release
 import org.icescrum.core.domain.Product
 import org.icescrum.core.domain.Sprint
 import org.icescrum.core.domain.User
-import org.apache.commons.lang.ObjectUtils.Null
 import icescrum.plugin.google.agenda.GoogleCalendarSettings
 
 class CalendarSynchroService implements ApplicationListener<IceScrumEvent> {
@@ -15,8 +14,8 @@ class CalendarSynchroService implements ApplicationListener<IceScrumEvent> {
 
     void onApplicationEvent(IceScrumEvent e) {
         try {
-            if(e.source instanceof Release){
-                manageReleaseEvent((Release)e.source, (User)e.doneBy, e.type)
+            if(e.source instanceof Product){
+                manageProductEvent((Product)e.source, (User)e.doneBy, e.type)
             }
             else if(e.source instanceof Sprint){
                 manageSprintEvent((Sprint)e.source, (User)e.doneBy, e.type)
@@ -27,10 +26,9 @@ class CalendarSynchroService implements ApplicationListener<IceScrumEvent> {
         }
     }
 
-    private void manageReleaseEvent (Release release, User author, String type) {
-        println "Received release event: "+ release.id + "type:" + type
+    private void manageProductEvent (Product product, User author, String type) {
+        println "Received product event: "+ product.id + "type:" + type
         if (type != IceScrumEvent.EVENT_DELETED) {
-            Product product = release.parentProduct
             GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(product)
             if (googleSettings) {
                 if (type == IceScrumEvent.EVENT_UPDATED) {
@@ -38,7 +36,7 @@ class CalendarSynchroService implements ApplicationListener<IceScrumEvent> {
                     product = Product.get(product.id)
                     author = User.get(author.id)
                     calendarEventService.updateWholeCalendar(product, author.preferences.language)
-                    println "Update calendar after release update"
+                    println "Updated calendar after product update"
                 }
             }
         }
@@ -56,16 +54,16 @@ class CalendarSynchroService implements ApplicationListener<IceScrumEvent> {
             if (googleSettings) {
                 if (type == IceScrumEvent.EVENT_UPDATED) {
                     calendarEventService.updateWholeCalendar(product, author.preferences.language)
-                    println "Update calendar after sprint update"
+                    println "Updated calendar after sprint update"
                 }
                 else if (type == IceScrumEvent.EVENT_CREATED) {
                     // Chercher dynamiquement le bon numero de sprint
-                    calendarEventService.addSprint(product, sprint, 28, sprint.parentRelease.name)
-                    println "Add sprint after sprint creation"
+                    calendarEventService.addSprint(product, sprint, sprint.parentRelease.name)
+                    println "Added sprint after sprint creation"
                 }
                 else if(type == IceScrumSprintEvent.EVENT_ACTIVATED) {
                     calendarEventService.addSprintMeetings(product, sprint, author.preferences.language)
-                    println "Add meetings after sprint activation"
+                    println "Added meetings after sprint activation"
                 }
             }
         }

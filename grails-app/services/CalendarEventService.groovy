@@ -24,23 +24,20 @@ class CalendarEventService {
         CalendarService googleService = googleCalendarService.getConnection(googleSettings.login, googleSettings.password)
         CalendarEntry c = googleCalendarService.getCalendar(googleService, googleSettings.login, CALENDAR_NAME)
         googleCalendarService.emptyCalendar(googleService, c, googleSettings.login)
-        int sprintNumber = 1
         product.releases?.each { release->
             release.sprints?.each { sprint->
-                addSprint(product, sprint, sprintNumber, release.name)
+                addSprint(product, sprint, release.name)
                 if(sprint.state != Sprint.STATE_WAIT)
                     addSprintMeetings(product, sprint, language)
-                sprintNumber ++
             }
-            sprintNumber = 1
         }
     }
 
-    def addSprint(Product product, Sprint sprint, sprintNumber, releaseName) {
+    def addSprint(Product product, Sprint sprint, releaseName) {
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(product)
         CalendarService googleService = googleCalendarService.getConnection(googleSettings.login, googleSettings.password)
         createSingleEvent(googleService,
-                          releaseName + "-Sprint#" + sprintNumber,
+                          releaseName + "-Sprint#" + sprint.orderNumber,
                           null,
                           iSDateToGoogleDate(sprint.startDate,true,false),
                           iSDateToGoogleDate(sprint.endDate,true,true),
