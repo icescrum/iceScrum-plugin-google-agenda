@@ -5,11 +5,14 @@ import com.google.gdata.data.calendar.CalendarFeed
 import com.google.gdata.client.calendar.CalendarService
 import com.google.gdata.data.calendar.CalendarEventEntry
 import com.google.gdata.data.calendar.CalendarEventFeed
+import com.google.gdata.data.batch.BatchOperationType
+import com.google.gdata.data.batch.BatchUtils
+import com.google.gdata.data.Link
 
 
-import com.google.gdata.data.acl.AclEntry;
-import com.google.gdata.data.acl.AclScope;
-import com.google.gdata.data.calendar.CalendarAclRole;
+import com.google.gdata.data.acl.AclEntry
+import com.google.gdata.data.acl.AclScope
+import com.google.gdata.data.calendar.CalendarAclRole
 
 class GoogleCalendarService {
 
@@ -65,7 +68,6 @@ class GoogleCalendarService {
         CalendarEntry calendar = getCalendar(service, login, calendarName)
         try {
             calendar.delete()
-            System.out.println("Calendar deleted")
         } catch (Exception e) {
             System.out.println("Unable to delete calendar")
         }
@@ -121,11 +123,16 @@ class GoogleCalendarService {
     def emptyCalendar(CalendarService service, CalendarEntry c, login) {
 		try {
 			URL feedUrl = new URL(getCalendarURL(c, login));
-			CalendarEventFeed myFeed = service.getFeed(feedUrl, CalendarEventFeed.class);
-			List<CalendarEventEntry> events = myFeed.getEntries();
-			for(int i = 0; i < events.size(); i++) {
-				events.get(i).delete();
-			}
+			CalendarEventFeed feed = service.getFeed(feedUrl, CalendarEventFeed.class)
+
+			List<CalendarEventEntry> events = feed.getEntries();
+            while(events.size() > 0) {
+			    for(int i = 0; i < events.size(); i++) {
+			    	events.get(i).delete();
+                }
+                feed = service.getFeed(feedUrl, CalendarEventFeed.class)
+                events = feed.getEntries();
+            }
 		} catch (Exception e) {
             if (log.debugEnabled) e.printStackTrace()
 			return false;
