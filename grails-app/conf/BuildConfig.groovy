@@ -1,10 +1,5 @@
 grails.project.work.dir = "target"
 
-//Relative path or absolute path to iceScrum core plugins
-grails.plugin.location.'icescrum-core-domain' =  '../../iceScrum/plugins/icescrum-core-domain'
-grails.plugin.location.'icescrum-core-services' =  '../../iceScrum/plugins/icescrum-core-services'
-grails.plugin.location.'icescrum-core-webcomponents' =  '../../iceScrum/plugins/icescrum-core-webcomponents'
-
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
     inherits("global") {
@@ -25,10 +20,15 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
         //mavenRepo "http://repository.jboss.com/maven2/"
+        mavenRepo "http://repo.icescrum.org/artifactory/plugins-release/"
     }
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
         // runtime 'mysql:mysql-connector-java:5.1.13'
+    }
+
+    plugins {
+      compile "org.icescrum:icescrum-core:1.2"
     }
 }

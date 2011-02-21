@@ -10,7 +10,7 @@ import org.icescrum.core.domain.Sprint
 import org.icescrum.core.domain.User
 import org.icescrum.core.domain.preferences.ProductPreferences
 
-import org.icescrum.web.support.MenuBarSupport
+import org.icescrum.core.support.MenuBarSupport
 
 @Secured('scrumMaster()')
 class GoogleAgendaController {
