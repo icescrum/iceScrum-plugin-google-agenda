@@ -13,8 +13,8 @@ class GoogleCalendarSettings {
     boolean displaySprintRetrospective = false
 
     static constraints = {
-      login(nullable:false)
-      password(nullable:false)
+      login(nullable:true)
+      password(nullable:true)
     }
 
     static belongsTo = [product:Product]

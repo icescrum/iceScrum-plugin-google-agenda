@@ -67,19 +67,17 @@ class GoogleAgendaController {
     }
 
     def saveAccount = {
-        GoogleCalendarSettings googleSettings = new GoogleCalendarSettings(login:params.googleLogin, password:params.googlePassword, product:Product.get(params.product))
+        def currentProduct = Product.get(params.product)
+        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(currentProduct)
+        if(!googleSettings)
+            googleSettings = new GoogleCalendarSettings(product:currentProduct)
         try {
             CalendarService googleService = googleCalendarService.getConnection(params.googleLogin, params.googlePassword);
             if(googleService) {
+                googleSettings.login = params.googleLogin
+                googleSettings.password = params.googlePassword
                 googleSettings.save()
-                ///////////////////////////////////////
-                ///////////////////////////////////////
-                //////////////////////////////////////
-                //// Utiliser le init à la place du create
-                //////////////////////////////////////
-                /////////////////////////////////////
-                ////////////////////////////////////
-                googleCalendarService.createCalendar(googleService, googleSettings.login, CALENDAR_NAME)
+                calendarEventService.initCalendar(currentProduct)
                 redirect(action:'index',params:[product:params.product])
             }
         }catch(RuntimeException e){
@@ -118,14 +116,5 @@ class GoogleAgendaController {
         }catch(RuntimeException e){
             render(status:400,contentType:'application/json', text: [notice: [text: message(code: e.getMessage())]] as JSON)
         }
-    }
-
-    def modifyAccount = {
-        Product currentProduct = Product.get(params.product)
-        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
-        googleSettings.login = params.googleLogin
-        googleSettings.password = params.googlePassword
-        googleSettings.save()
-        calendarEventService.initCalendar(currentProduct)
     }
 }

@@ -8,6 +8,7 @@
                 (<is:link
                   class="scrum-link"
                   remote="true"
+                  history="false"
                   update="window-content-${id}"
                   url="[controller:id, action:'changeAccount', params:[product:params.product]]">${message(code:'is.googleAgenda.ui.modify')}</is:link>)</p>
               <p>${message(code: 'is.googleAgenda.ui.linkToCalendar')}
