@@ -31,13 +31,7 @@ class GoogleCalendarService {
     }
 
 
-    def initCalendar(CalendarService service, login, calendarName) {
-        //get
-        //empty
-        createCalendar(service, login, calendarName)
 
-        //addsprints
-    }
 
     def createCalendar(CalendarService service, login, calendarName) {
         CalendarEntry calendar = getCalendar(service, login, calendarName)

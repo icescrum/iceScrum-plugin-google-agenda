@@ -24,10 +24,6 @@ class CalendarEventService {
         CalendarService googleService = googleCalendarService.getConnection(googleSettings.login, googleSettings.password)
         CalendarEntry c = googleCalendarService.getCalendar(googleService, googleSettings.login, CALENDAR_NAME)
         googleCalendarService.emptyCalendar(googleService, c, googleSettings.login)
-        addAllSprints(product, language)
-    }
-
-    def addAllSprints(Product product, language) {
         product.releases?.each { release->
             release.sprints?.each { sprint->
                 addSprint(product, sprint, release.name)
@@ -35,6 +31,26 @@ class CalendarEventService {
                     addSprintMeetings(product, sprint, language)
             }
         }
+    }
+
+    def addAllSprints(Product product) {
+        product.releases?.each { release->
+            release.sprints?.each { sprint->
+                addSprint(product, sprint, release.name)
+            }
+        }
+    }
+
+    def initCalendar(Product product) {
+        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(product)
+        CalendarService googleService = googleCalendarService.getConnection(googleSettings.login, googleSettings.password)
+        CalendarEntry c = googleCalendarService.getCalendar(googleService, googleSettings.login, CALENDAR_NAME)
+        if(c == null) {
+            googleCalendarService.createCalendar(googleService, googleSettings.login, CALENDAR_NAME)
+        } else {
+            googleCalendarService.emptyCalendar(googleService, c, googleSettings.login)
+        }
+        addAllSprints(product)
     }
 
     def addSprint(Product product, Sprint sprint, releaseName) {
@@ -245,4 +261,6 @@ class CalendarEventService {
         }
         return computedDate
     }
+
+
 }
