@@ -24,6 +24,10 @@ class CalendarEventService {
         CalendarService googleService = googleCalendarService.getConnection(googleSettings.login, googleSettings.password)
         CalendarEntry c = googleCalendarService.getCalendar(googleService, googleSettings.login, CALENDAR_NAME)
         googleCalendarService.emptyCalendar(googleService, c, googleSettings.login)
+        addAllSprints(product, language)
+    }
+
+    def addAllSprints(Product product, language) {
         product.releases?.each { release->
             release.sprints?.each { sprint->
                 addSprint(product, sprint, release.name)

@@ -141,7 +141,6 @@ class GoogleCalendarService {
 	}
 
     def emptyCalendar(CalendarService service, CalendarEntry c, login) {
-		System.out.println("Emptying calendar")
         try {
 			URL feedUrl = new URL(getCalendarURL(c, login));
             CalendarQuery query = new CalendarQuery(feedUrl);
