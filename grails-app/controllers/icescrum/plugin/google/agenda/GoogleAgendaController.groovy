@@ -6,7 +6,6 @@ import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
 
 import org.icescrum.core.domain.Product
-import org.icescrum.core.domain.Sprint
 import org.icescrum.core.domain.User
 import org.icescrum.core.domain.preferences.ProductPreferences
 
@@ -73,6 +72,13 @@ class GoogleAgendaController {
             CalendarService googleService = googleCalendarService.getConnection(params.googleLogin, params.googlePassword);
             if(googleService) {
                 googleSettings.save()
+                ///////////////////////////////////////
+                ///////////////////////////////////////
+                //////////////////////////////////////
+                //// Utiliser le init à la place du create
+                //////////////////////////////////////
+                /////////////////////////////////////
+                ////////////////////////////////////
                 googleCalendarService.createCalendar(googleService, googleSettings.login, CALENDAR_NAME)
                 redirect(action:'index',params:[product:params.product])
             }
@@ -82,9 +88,12 @@ class GoogleAgendaController {
     }
 
     def changeAccount = {
+        Product currentProduct = Product.get(params.product)
+        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(currentProduct)
+
         render template:'window/changeAccount',
                 plugin:pluginName,
-                model:[id:id]
+                model:[id:id, login:googleSettings.login]
     }
 
     def saveSettings = {
@@ -112,11 +121,11 @@ class GoogleAgendaController {
     }
 
     def modifyAccount = {
-        //a verifier
-        calendarEventService.initCalendar(Product.get(params.product))
+        Product currentProduct = Product.get(params.product)
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
         googleSettings.login = params.googleLogin
         googleSettings.password = params.googlePassword
         googleSettings.save()
+        calendarEventService.initCalendar(currentProduct)
     }
 }
