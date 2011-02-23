@@ -4,7 +4,13 @@
         <div class="panel-box">
           <h3 class="panel-box-title">${message(code:'is.googleAgenda.ui.accountTitle')}</h3>
             <div class="panel-box-content">
-              <p>${message(code:'is.googleAgenda.ui.account')} <b>${login}</b></p>
+              <p>${message(code:'is.googleAgenda.ui.account')} <b>${login}</b>
+                (<is:link
+                  type="submit"
+                  class="scrum-link"
+                  remote="true"
+                  history="false"
+                  url="[controller:id, action:'changeAccount', params:[product:params.product]]">${message(code:'is.googleAgenda.ui.modify')}</is:link>)</p>
               <p>${message(code: 'is.googleAgenda.ui.linkToCalendar')}
                   <is:link id="googleLink" name="googleLink" class="scrum-link" target="_blank" url="${googleLink}">Google Link</is:link>
               </p>

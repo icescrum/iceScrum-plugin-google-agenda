@@ -81,6 +81,12 @@ class GoogleAgendaController {
         }
     }
 
+    def changeAccount = {
+        render template:'window/changeAccount',
+                plugin:pluginName,
+                model:[id:id]
+    }
+
     def saveSettings = {
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
         googleSettings.displayDailyMeetings = (params.displayDailyMeetings) ? true : false
