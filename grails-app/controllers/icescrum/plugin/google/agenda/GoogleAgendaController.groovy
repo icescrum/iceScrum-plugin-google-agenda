@@ -112,6 +112,7 @@ class GoogleAgendaController {
     }
 
     def modifyAccount = {
+        //a verifier
         calendarEventService.initCalendar(Product.get(params.product))
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
         googleSettings.login = params.googleLogin
