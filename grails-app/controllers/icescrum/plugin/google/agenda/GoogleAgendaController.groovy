@@ -6,10 +6,8 @@ import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
 
 import org.icescrum.core.domain.Product
-import org.icescrum.core.domain.Sprint
 import org.icescrum.core.domain.User
 import org.icescrum.core.domain.preferences.ProductPreferences
-
 import org.icescrum.core.support.MenuBarSupport
 
 @Secured('scrumMaster()')
@@ -73,6 +71,13 @@ class GoogleAgendaController {
             CalendarService googleService = googleCalendarService.getConnection(params.googleLogin, params.googlePassword);
             if(googleService) {
                 googleSettings.save()
+                ///////////////////////////////////////
+                ///////////////////////////////////////
+                //////////////////////////////////////
+                //// Utiliser le init à la place du create
+                //////////////////////////////////////
+                /////////////////////////////////////
+                ////////////////////////////////////
                 googleCalendarService.createCalendar(googleService, googleSettings.login, CALENDAR_NAME)
                 redirect(action:'index',params:[product:params.product])
             }
