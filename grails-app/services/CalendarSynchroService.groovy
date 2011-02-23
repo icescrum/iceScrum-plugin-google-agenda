@@ -1,8 +1,6 @@
 import org.springframework.context.ApplicationListener
 import org.icescrum.core.event.IceScrumEvent
 import org.icescrum.core.event.IceScrumSprintEvent
-import org.icescrum.core.event.IceScrumReleaseEvent
-import org.icescrum.core.domain.Release
 import org.icescrum.core.domain.Product
 import org.icescrum.core.domain.Sprint
 import org.icescrum.core.domain.User
