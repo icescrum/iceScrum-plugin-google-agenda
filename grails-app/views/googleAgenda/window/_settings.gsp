@@ -6,10 +6,9 @@
             <div class="panel-box-content">
               <p>${message(code:'is.googleAgenda.ui.account')} <b>${login}</b>
                 (<is:link
-                  type="submit"
                   class="scrum-link"
                   remote="true"
-                  history="false"
+                  update="window-content-${id}"
                   url="[controller:id, action:'changeAccount', params:[product:params.product]]">${message(code:'is.googleAgenda.ui.modify')}</is:link>)</p>
               <p>${message(code: 'is.googleAgenda.ui.linkToCalendar')}
                   <is:link id="googleLink" name="googleLink" class="scrum-link" target="_blank" url="${googleLink}">Google Link</is:link>
