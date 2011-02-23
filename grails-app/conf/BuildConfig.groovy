@@ -29,6 +29,6 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-      compile "org.icescrum:icescrum-core:1.2"
+      compile "org.icescrum:icescrum-core:1.2.1"
     }
 }
