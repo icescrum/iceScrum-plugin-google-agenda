@@ -6,8 +6,10 @@ import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
 
 import org.icescrum.core.domain.Product
+import org.icescrum.core.domain.Sprint
 import org.icescrum.core.domain.User
 import org.icescrum.core.domain.preferences.ProductPreferences
+
 import org.icescrum.core.support.MenuBarSupport
 
 @Secured('scrumMaster()')
@@ -71,13 +73,6 @@ class GoogleAgendaController {
             CalendarService googleService = googleCalendarService.getConnection(params.googleLogin, params.googlePassword);
             if(googleService) {
                 googleSettings.save()
-                ///////////////////////////////////////
-                ///////////////////////////////////////
-                //////////////////////////////////////
-                //// Utiliser le init à la place du create
-                //////////////////////////////////////
-                /////////////////////////////////////
-                ////////////////////////////////////
                 googleCalendarService.createCalendar(googleService, googleSettings.login, CALENDAR_NAME)
                 redirect(action:'index',params:[product:params.product])
             }
@@ -87,12 +82,9 @@ class GoogleAgendaController {
     }
 
     def changeAccount = {
-        Product currentProduct = Product.get(params.product)
-        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(currentProduct)
-
         render template:'window/changeAccount',
                 plugin:pluginName,
-                model:[id:id, login:googleSettings.login]
+                model:[id:id]
     }
 
     def saveSettings = {
@@ -117,5 +109,13 @@ class GoogleAgendaController {
         }catch(RuntimeException e){
             render(status:400,contentType:'application/json', text: [notice: [text: message(code: e.getMessage())]] as JSON)
         }
+    }
+
+    def modifyAccount = {
+        calendarEventService.initCalendar(Product.get(params.product))
+        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
+        googleSettings.login = params.googleLogin
+        googleSettings.password = params.googlePassword
+        googleSettings.save()
     }
 }
