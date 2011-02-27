@@ -25,7 +25,6 @@ class CalendarSynchroService implements ApplicationListener<IceScrumEvent> {
     }
 
     private void manageProductEvent (Product product, User author, String type) {
-        println "Received product event: "+ product.id + "type:" + type
         if (type != IceScrumEvent.EVENT_DELETED) {
             GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(product)
             if (googleSettings) {
@@ -41,7 +40,6 @@ class CalendarSynchroService implements ApplicationListener<IceScrumEvent> {
     }
 
     private void manageSprintEvent (Sprint sprint, User author, String type) {
-        println "Received sprint event: " + sprint.id + "type:" + type
         if (type != IceScrumEvent.EVENT_DELETED) {
             //Fake hibernate session
             author = User.get(author.id)
