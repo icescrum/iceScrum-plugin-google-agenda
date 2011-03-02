@@ -10,6 +10,7 @@ import com.google.gdata.data.batch.BatchOperationType
 import com.google.gdata.data.batch.BatchUtils
 import com.google.gdata.data.Link
 import com.google.gdata.data.ILink
+import com.google.gdata.data.DateTime;
 
 import com.google.gdata.data.acl.AclEntry
 import com.google.gdata.data.acl.AclScope
@@ -65,17 +66,20 @@ class GoogleCalendarService {
     }
 
     def getCalendar(CalendarService service, login, calendarName) {
-        CalendarFeed resultFeed = null
         try {
-            resultFeed = service?.getFeed(getPostUrl(login, true), CalendarFeed.class)
-        }
-        catch (Exception e) {
+            CalendarFeed resultFeed = service?.getFeed(getPostUrl(login, true), CalendarFeed.class)
+            CalendarEntry calendar = null
+            for(int i = 0; i < resultFeed?.getEntries()?.size() && calendar == null; i++) {
+                if(resultFeed.getEntries().get(i)?.getTitle()?.getPlainText()?.equals(calendarName)) {
+                    calendar = resultFeed.getEntries().get(i)
+                }
+            }
+            if(calendar == null) {
+            }
+            return calendar;
+        } catch (Exception e) {
             if (log.debugEnabled) e.printStackTrace()
         }
-        for(int i = 0; i < resultFeed?.getEntries()?.size(); i++)
-            if(resultFeed.getEntries().get(i)?.getTitle()?.getPlainText()?.equals(calendarName))
-                return resultFeed.getEntries().get(i)
-        return null;
     }
 
     def deleteCalendar(CalendarService service, String login, String calendarName) {
@@ -134,11 +138,12 @@ class GoogleCalendarService {
 		}
 	}
 
-    def emptyCalendar(CalendarService service, CalendarEntry c, login) {
+    def emptyCalendar(CalendarService service, CalendarEntry c, String login, String startTime) {
         try {
 			URL feedUrl = new URL(getCalendarURL(c, login));
             CalendarQuery query = new CalendarQuery(feedUrl);
 			query.setMaxResults(10000)
+            if(startTime != null) query.setMinimumStartTime(DateTime.parseDateTime(startTime))
 			CalendarEventFeed feed = service.query(query, CalendarEventFeed.class)
             List<CalendarEventEntry> events = feed.getEntries()
 			CalendarEventFeed batchRequest = new CalendarEventFeed()
@@ -146,15 +151,13 @@ class GoogleCalendarService {
 			for(int i = 0; i < events.size(); i++) {
 			    toDelete = events.get(i)
 				BatchUtils.setBatchId(toDelete, "" + i)
-				BatchUtils.setBatchOperationType(toDelete,
-				    BatchOperationType.DELETE)
+				BatchUtils.setBatchOperationType(toDelete, BatchOperationType.DELETE)
 				batchRequest.getEntries().add(toDelete)
             }
             Link batchLink = feed.getLink(ILink.Rel.FEED_BATCH, ILink.Type.ATOM)
-			CalendarEventFeed batchResponse = service.batch(new URL(batchLink.getHref()), batchRequest)
+			service.batch(new URL(batchLink.getHref()), batchRequest)
 		} catch (Exception e) {
             if (log.debugEnabled) e.printStackTrace()
-            e.printStackTrace()
 			return false
 		}
 		return true

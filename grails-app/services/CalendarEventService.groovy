@@ -23,12 +23,27 @@ class CalendarEventService {
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(product)
         CalendarService googleService = googleCalendarService.getConnection(googleSettings.login, googleSettings.password)
         CalendarEntry c = googleCalendarService.getCalendar(googleService, googleSettings.login, CALENDAR_NAME)
-        googleCalendarService.emptyCalendar(googleService, c, googleSettings.login)
+        Sprint currentSprint = null
+        // possibilité d'utiliser les namedQueries de Sprint
+        // pour récupérer la date de début du sprint courant ?
         product.releases?.each { release->
             release.sprints?.each { sprint->
-                addSprint(product, sprint, release.name)
-                if(sprint.state != Sprint.STATE_WAIT)
+                boolean sprintActivated = false
+                String sprintStartDate = null
+                if(sprint.state == Sprint.STATE_INPROGRESS) {
+                    sprintActivated = true
+                    sprintStartDate = iSDateToGoogleDate(sprint.startDate, false, false)
+                    googleCalendarService.emptyCalendar(googleService, c, googleSettings.login, sprintStartDate)
+                    addSprint(product, sprint, release.name)
                     addSprintMeetings(product, sprint, language)
+                } else if((sprint.state == Sprint.STATE_WAIT) && sprintActivated) {
+                    addSprint(product, sprint, release.name)
+                } else if((sprint.state == Sprint.STATE_WAIT) && !sprintActivated) {
+                    sprintActivated = true
+                    sprintStartDate = iSDateToGoogleDate(sprint.startDate, false, false)
+                    googleCalendarService.emptyCalendar(googleService, c, googleSettings.login, sprintStartDate)
+                    addSprint(product, sprint, release.name)
+                }
             }
         }
     }
@@ -44,6 +59,16 @@ class CalendarEventService {
     def initCalendar(Product product) {
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(product)
         CalendarService googleService = googleCalendarService.getConnection(googleSettings.login, googleSettings.password)
+        CalendarEntry c = googleCalendarService.getCalendar(googleService, googleSettings.login, CALENDAR_NAME)
+        if(c == null) {
+            googleCalendarService.createCalendar(googleService, googleSettings.login, CALENDAR_NAME)
+        } else {
+            googleCalendarService.emptyCalendar(googleService, c, googleSettings.login)
+        }
+        addAllSprints(product)
+    }
+
+    def initCalendar(CalendarService googleService, login) {
         CalendarEntry c = googleCalendarService.getCalendar(googleService, googleSettings.login, CALENDAR_NAME)
         if(c == null) {
             googleCalendarService.createCalendar(googleService, googleSettings.login, CALENDAR_NAME)
