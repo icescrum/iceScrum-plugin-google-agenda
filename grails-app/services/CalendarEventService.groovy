@@ -68,16 +68,6 @@ class CalendarEventService {
         addAllSprints(product)
     }
 
-    def initCalendar(CalendarService googleService, login) {
-        CalendarEntry c = googleCalendarService.getCalendar(googleService, googleSettings.login, CALENDAR_NAME)
-        if(c == null) {
-            googleCalendarService.createCalendar(googleService, googleSettings.login, CALENDAR_NAME)
-        } else {
-            googleCalendarService.emptyCalendar(googleService, c, googleSettings.login)
-        }
-        addAllSprints(product)
-    }
-
     def addSprint(Product product, Sprint sprint, releaseName) {
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(product)
         CalendarService googleService = googleCalendarService.getConnection(googleSettings.login, googleSettings.password)
