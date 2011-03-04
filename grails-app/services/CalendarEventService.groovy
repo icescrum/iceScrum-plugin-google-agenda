@@ -63,7 +63,7 @@ class CalendarEventService {
         if(c == null) {
             googleCalendarService.createCalendar(googleService, googleSettings.login, CALENDAR_NAME)
         } else {
-            googleCalendarService.emptyCalendar(googleService, c, googleSettings.login)
+            googleCalendarService.emptyCalendar(googleService, c, googleSettings.login, null)
         }
         addAllSprints(product)
     }
