@@ -150,4 +150,8 @@ class GoogleAgendaController {
             render(status:400,contentType:'application/json', text: [notice: [text: message(code: e.getMessage())]] as JSON)
         }
     }
+
+    def dashboardLink = {
+        render(status:200, text:"toto");
+    }
 }
