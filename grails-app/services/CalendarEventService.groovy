@@ -57,6 +57,11 @@ class CalendarEventService {
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(product)
         CalendarService googleService = googleCalendarService.getConnection(googleSettings.login, googleSettings.password)
         CalendarEntry c = googleCalendarService.getCalendar(googleService, googleSettings.login, CALENDAR_NAME)
+        while(c == null) {
+            initCalendar(product)
+            //googleCalendarService.createCalendar(googleService, googleSettings.login, CALENDAR_NAME)
+            c = googleCalendarService.getCalendar(googleService, googleSettings.login, CALENDAR_NAME)
+        }
         Sprint currentSprint = null
         // possibilité d'utiliser les namedQueries de Sprint
         // pour récupérer la date de début du sprint courant ?

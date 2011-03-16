@@ -69,7 +69,7 @@ class GoogleCalendarService {
 
 
     def createCalendar(CalendarService service, login, calendarName) {
-        CalendarEntry calendar = getCalendar(service, login, calendarName)
+        CalendarEntry calendar = null
         while(calendar == null) {
             calendar = new CalendarEntry()
             calendar.setTitle(new PlainTextConstruct(calendarName))
@@ -107,8 +107,6 @@ class GoogleCalendarService {
                 if(resultFeed.getEntries().get(i)?.getTitle()?.getPlainText()?.equals(calendarName)) {
                     calendar = resultFeed.getEntries().get(i)
                 }
-            }
-            if(calendar == null) {
             }
             return calendar;
         } catch (Exception e) {
