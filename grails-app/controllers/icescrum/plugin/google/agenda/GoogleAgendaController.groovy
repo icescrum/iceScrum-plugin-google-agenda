@@ -152,6 +152,17 @@ class GoogleAgendaController {
     }
 
     def dashboardLink = {
-        render(status:200, text:"toto");
+        GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(params.product)
+        def googleLink = null
+        if (googleSettings) {
+            try {
+                CalendarService googleService = googleCalendarService.getConnection(googleSettings.login, googleSettings.password)
+                googleLink = googleCalendarService.getCalendarPublicURL(googleService, googleSettings.login, CALENDAR_NAME)
+            }catch(RuntimeException e){}
+        }
+        params.product = params.product.id
+        render template:'window/dashboardLink',
+                plugin:pluginName,
+                model:[id:id, googleLink:googleLink]
     }
 }
