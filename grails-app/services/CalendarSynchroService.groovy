@@ -61,7 +61,7 @@ class CalendarSynchroService implements ApplicationListener<IceScrumEvent> {
     private void manageProductEvent (Product product, User author, String type) {
         if (type != IceScrumEvent.EVENT_DELETED) {
             GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(product)
-            if (googleSettings) {
+            if (googleSettings && googleSettings.enableSynchro) {
                 if (type == IceScrumEvent.EVENT_UPDATED) {
                     //Fake hibernate session
                     product = Product.get(product.id)
@@ -81,13 +81,12 @@ class CalendarSynchroService implements ApplicationListener<IceScrumEvent> {
             def product = Product.get(sprint.parentRelease.parentProduct.id)
 
             GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(product)
-            if (googleSettings) {
+            if (googleSettings && googleSettings.enableSynchro) {
                 if (type == IceScrumEvent.EVENT_UPDATED) {
                     calendarEventService.updateWholeCalendar(product, author.preferences.language)
                     println "Updated calendar after sprint update"
                 }
                 else if (type == IceScrumEvent.EVENT_CREATED) {
-                    // Chercher dynamiquement le bon numero de sprint
                     calendarEventService.addSprint(product, sprint, sprint.parentRelease.name)
                     println "Added sprint after sprint creation"
                 }

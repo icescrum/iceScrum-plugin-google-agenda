@@ -81,6 +81,7 @@ class GoogleAgendaController {
                              displaySprintRetrospective:googleSettings.displaySprintRetrospective,
                              displayReleasePlanning:googleSettings.displayReleasePlanning,
                              displaySprintPlanning:googleSettings.displaySprintPlanning,
+                             enableSynchro:googleSettings.enableSynchro,
                              dailyMeetingHour:preferences.dailyMeetingHour,
                              sprintReviewHour:preferences.sprintReviewHour,
                              sprintRetrospectiveHour:preferences.sprintRetrospectiveHour,
@@ -134,6 +135,7 @@ class GoogleAgendaController {
         googleSettings.displaySprintRetrospective = (params.displaySprintRetrospective) ? true : false
         googleSettings.displaySprintPlanning = (params.displaySprintPlanning) ? true : false
         googleSettings.displayReleasePlanning = (params.displayReleasePlanning) ? true : false
+        googleSettings.enableSynchro = (params.enableSynchro) ? true : false
         if(googleSettings.save())
             render(status:200,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.success.saveSettings')]] as JSON)
         else

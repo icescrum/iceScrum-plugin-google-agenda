@@ -45,6 +45,7 @@ class GoogleCalendarSettings {
     boolean displaySprintPlanning = false
     boolean displaySprintReview = false
     boolean displaySprintRetrospective = false
+    boolean enableSynchro = true
 
     static constraints = {
       login(nullable:true)

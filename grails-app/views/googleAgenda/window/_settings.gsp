@@ -65,8 +65,12 @@
           <div class="panel-box">
               <h3 class="panel-box-title">${message(code:'is.googleAgenda.ui.settingsTitle')}</h3>
               <div class="panel-box-content">
-                  <p>${message(code:'is.googleAgenda.ui.settings')}</p>
                   <form name="googleForm" method="post" onsubmit="$('input[name=googleButton]').click();return false;">
+                          <p>${message(code:'is.googleAgenda.ui.synchroSettings')}</p>
+                          <is:checkbox  name="enableSynchro"
+                                        value="${enableSynchro}"
+                                        label="${message(code: 'is.googleAgenda.ui.enabled')}" /><br/>
+                          <p>${message(code:'is.googleAgenda.ui.meetingSettings')}</p>
                           <is:checkbox  name="displayReleasePlanning"
                                         value="${displayReleasePlanning}"
                                         label="${message(code: 'is.googleAgenda.ui.releasePlanning')+' ('+releasePlanningHour+')'}" /><br/>
