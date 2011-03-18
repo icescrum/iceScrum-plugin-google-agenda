@@ -103,6 +103,7 @@ class GoogleAgendaController {
 
     def saveAccount = {
         def currentProduct = Product.get(params.product)
+        def language = User.get(springSecurityService.principal.id).preferences.language
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(currentProduct)
         if(!googleSettings)
             googleSettings = new GoogleCalendarSettings(product:currentProduct)
@@ -113,6 +114,7 @@ class GoogleAgendaController {
                 googleSettings.password = params.googlePassword
                 googleSettings.save()
                 calendarEventService.initCalendar(currentProduct)
+                calendarEventService.updateWholeCalendar(currentProduct, language)
                 redirect(action:'index',params:[product:params.product])
             }
         }catch(RuntimeException e){
