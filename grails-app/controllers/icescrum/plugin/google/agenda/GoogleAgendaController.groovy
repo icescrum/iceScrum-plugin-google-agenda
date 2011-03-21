@@ -45,7 +45,7 @@ import org.icescrum.core.domain.preferences.ProductPreferences
 
 import org.icescrum.core.support.MenuBarSupport
 
-@Secured('scrumMaster()')
+@Secured('inProduct()')
 class GoogleAgendaController {
 
     // Gestion des erreurs !!!!!!!!!!!!!!!!
@@ -64,6 +64,7 @@ class GoogleAgendaController {
 
     def CALENDAR_NAME = "iceScrum"
 
+    @Secured('scrumMaster()')
     def index = {
         Product currentProduct = Product.get(params.product)
         ProductPreferences preferences = currentProduct.preferences
@@ -101,6 +102,7 @@ class GoogleAgendaController {
         }
     }
 
+    @Secured('scrumMaster()')
     def saveAccount = {
         def currentProduct = Product.get(params.product)
         def language = User.get(springSecurityService.principal.id).preferences.language
@@ -122,6 +124,7 @@ class GoogleAgendaController {
         }
     }
 
+    @Secured('scrumMaster()')
     def changeAccount = {
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
 
@@ -130,6 +133,7 @@ class GoogleAgendaController {
                 model:[id:id, login:googleSettings.login]
     }
 
+    @Secured('scrumMaster()')
     def saveSettings = {
         GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(Product.get(params.product))
         googleSettings.displayDailyMeetings = (params.displayDailyMeetings) ? true : false
@@ -144,6 +148,7 @@ class GoogleAgendaController {
             render(status:400,contentType:'application/json', text: [notice: [text: message(code: 'is.googleAgenda.error.saveSettings')]] as JSON)
     }
 
+    @Secured('scrumMaster()')
     def updateCalendar = {
         Product currentProduct = Product.get(params.product)
         def language = User.get(springSecurityService.principal.id).preferences.language
