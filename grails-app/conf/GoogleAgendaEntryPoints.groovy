@@ -36,6 +36,6 @@ entryPoints = {
    entry {
        action "dashboardLink"
        controller "googleAgenda"
-       points "project-dashboard-bottom-left"
+       ref "project-dashboard-bottom-left"
    }
 }
