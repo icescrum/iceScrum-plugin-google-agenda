@@ -40,7 +40,7 @@
           <is:link id="googleLink" name="googleLink" class="scrum-link" target="_blank" url="${googleLink}">Google Link</is:link>
         </g:if>
         <g:else>
-          <g:message code="is.googleAgenda.ui.setAccountDescription"/>
+          <g:message code="is.googleAgenda.ui.noAccountAssociated"/>
         </g:else>
       </div>
 </is:panel>
