@@ -59,7 +59,7 @@ class CalendarSynchroService implements ApplicationListener<IceScrumEvent> {
     }
 
     private void manageProductEvent (Product product, User author, String type) {
-        if (type != IceScrumEvent.EVENT_DELETED) {
+        if (type != IceScrumEvent.EVENT_AFTER_DELETE && type != IceScrumEvent.EVENT_BEFORE_DELETE) {
             GoogleCalendarSettings googleSettings = GoogleCalendarSettings.findByProduct(product)
             if (googleSettings && googleSettings.enableSynchro) {
                 if (type == IceScrumEvent.EVENT_UPDATED) {
@@ -67,14 +67,15 @@ class CalendarSynchroService implements ApplicationListener<IceScrumEvent> {
                     product = Product.get(product.id)
                     author = User.get(author.id)
                     calendarEventService.updateWholeCalendar(product, author.preferences.language)
-                    println "Updated calendar after product update"
+                    if(log.debugEnabled)
+                        log.debug("Updated calendar after product update")
                 }
             }
         }
     }
 
     private void manageSprintEvent (Sprint sprint, User author, String type) {
-        if (type != IceScrumEvent.EVENT_DELETED) {
+        if (type != IceScrumEvent.EVENT_AFTER_DELETE && type != IceScrumEvent.EVENT_BEFORE_DELETE) {
             //Fake hibernate session
             author = User.get(author.id)
             sprint = Sprint.get(sprint.id)
@@ -84,15 +85,18 @@ class CalendarSynchroService implements ApplicationListener<IceScrumEvent> {
             if (googleSettings && googleSettings.enableSynchro) {
                 if (type == IceScrumEvent.EVENT_UPDATED) {
                     calendarEventService.updateWholeCalendar(product, author.preferences.language)
-                    println "Updated calendar after sprint update"
+                    if(log.debugEnabled)
+                        log.debug("Updated calendar after sprint update")
                 }
                 else if (type == IceScrumEvent.EVENT_CREATED) {
                     calendarEventService.addSprint(product, sprint, sprint.parentRelease.name)
-                    println "Added sprint after sprint creation"
+                    if(log.debugEnabled)
+                        log.debug("Added sprint after sprint creation")
                 }
                 else if(type == IceScrumSprintEvent.EVENT_ACTIVATED) {
                     calendarEventService.addSprintMeetings(product, sprint, author.preferences.language)
-                    println "Added meetings after sprint activation"
+                    if(log.debugEnabled)
+                        log.debug("Added meetings after sprint activation")
                 }
             }
         }
