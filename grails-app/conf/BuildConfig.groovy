@@ -29,6 +29,7 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-      compile "org.icescrum:icescrum-core:1.2.2"
+      compile ':maven-publisher:0.8.1'
+      compile "org.icescrum:icescrum-core:1.3"
     }
 }
