@@ -37,68 +37,12 @@
       <library name="Grails User Library">
         <CLASSES>
           <root url="file://$MODULE_DIR$/lib" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/net.sf.ehcache/ehcache-web/jars/ehcache-web-2.0.3.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.tmatesoft.svnkit/svnkit/jars/svnkit-1.3.3.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/javax.activation/activation/jars/activation-1.1.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/javax.mail/mail/jars/mail-1.4.3.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/log4j/log4j/jars/log4j-1.2.13.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/javax.servlet/servlet-api/jars/servlet-api-2.3.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/avalon-framework/avalon-framework/jars/avalon-framework-4.1.3.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/logkit/logkit/jars/logkit-1.0.1.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/commons-logging/commons-logging/jars/commons-logging-1.1.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.poi/poi/jars/poi-3.6.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/jfree/jfreechart/jars/jfreechart-1.0.12.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/jfree/jcommon/jars/jcommon-1.0.15.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/com.lowagie/itext/jars/itext-2.1.7.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/commons-digester/commons-digester/jars/commons-digester-1.7.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/net.sf.jasperreports/jasperreports/jars/jasperreports-4.0.0.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.slf4j/slf4j-ext/jars/slf4j-ext-1.5.8.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.liquibase/liquibase-core/jars/liquibase-core-1.9.3.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.springframework.security/org.springframework.security.web/jars/org.springframework.security.web-3.0.4.RELEASE.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.springframework.security/org.springframework.security.core/jars/org.springframework.security.core-3.0.4.RELEASE.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.springframework.security/org.springframework.security.acls/jars/org.springframework.security.acls-3.0.4.RELEASE.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.juli/com.springsource.org.apache.juli.extras/jars/com.springsource.org.apache.juli.extras-6.0.24.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.tomcat/com.springsource.org.apache.tomcat.jdbc/jars/com.springsource.org.apache.tomcat.jdbc-1.0.9.0.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.springframework/spring-test/jars/spring-test-3.0.5.RELEASE.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/mysql/mysql-connector-java/jars/mysql-connector-java-5.1.5.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/xml-resolver/xml-resolver/jars/xml-resolver-1.2.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/xerces/xercesImpl/jars/xercesImpl-2.8.1.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/net.sourceforge.nekohtml/nekohtml/jars/nekohtml-1.9.9.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/net.sf.ezmorph/ezmorph/jars/ezmorph-1.0.6.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/net.sf.json-lib/json-lib/jars/json-lib-2.3-jdk15.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/commons-codec/commons-codec/jars/commons-codec-1.3.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.httpcomponents/httpcore/jars/httpcore-4.0.1.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.httpcomponents/httpclient/jars/httpclient-4.0.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.codehaus.groovy.modules.http-builder/http-builder/jars/http-builder-0.5.0.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/nekohtml/nekohtml/jars/nekohtml-1.9.6.2.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/nekohtml/xercesMinimal/jars/xercesMinimal-1.9.6.2.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.maven.wagon/wagon-http-shared/jars/wagon-http-shared-1.0-beta-6.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.maven.wagon/wagon-http-lightweight/jars/wagon-http-lightweight-1.0-beta-6.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.maven.wagon/wagon-file/jars/wagon-file-1.0-beta-6.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.maven/maven-error-diagnostics/jars/maven-error-diagnostics-2.2.1.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.maven/maven-plugin-registry/jars/maven-plugin-registry-2.2.1.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.maven/maven-profile/jars/maven-profile-2.2.1.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.maven/maven-settings/jars/maven-settings-2.2.1.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.maven/maven-project/jars/maven-project-2.2.1.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.maven/maven-model/jars/maven-model-2.2.1.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/backport-util-concurrent/backport-util-concurrent/jars/backport-util-concurrent-3.1.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.maven.wagon/wagon-provider-api/jars/wagon-provider-api-1.0-beta-6.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.maven/maven-repository-metadata/jars/maven-repository-metadata-2.2.1.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.maven/maven-artifact-manager/jars/maven-artifact-manager-2.2.1.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.maven/maven-artifact/jars/maven-artifact-2.2.1.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.codehaus.plexus/plexus-interpolation/jars/plexus-interpolation-1.11.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.codehaus.plexus/plexus-utils/jars/plexus-utils-1.5.15.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.codehaus.plexus/plexus-container-default/jars/plexus-container-default-1.0-alpha-9-stable-1.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/classworlds/classworlds/jars/classworlds-1.1-alpha-2.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/ant/ant/jars/ant-1.6.5.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.maven/maven-ant-tasks/jars/maven-ant-tasks-2.1.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="iceScrum-plugin-google-agenda-grailsPlugins" />
   </component>
 </module>
 
